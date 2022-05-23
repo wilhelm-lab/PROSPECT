@@ -22,8 +22,8 @@ pip install proteomds
 
 From python:
 ```
-import proteomds as pds
-pds.download_dataset('retention-time', SAVE_PATH, sample=True) # Download dataset for retention time prediction.
+import proteomds
+proteomds.download_dataset('retention-time', SAVE_PATH, sample=True) # Download dataset for retention time prediction.
 ```
 
 Or, download and unzip from the [website](https://www.proteometools.org/).
