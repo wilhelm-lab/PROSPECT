@@ -1,4 +1,4 @@
-# ProteomDS: Proteomics Dataset for Machine Learning and Deep Learning
+# ProteomDS: Proteomics Dataset for Machine Learning
 
 [ProteomDS](https://www.proteometools.org/) enables machine learning on proteomics tasks.
 
