@@ -22,8 +22,8 @@ pip install prospect-dataset
 
 From python:
 ```
-import prospect_dataset as pds 
-pds.download_dataset('retention-time', SAVE_PATH, sample=True) # Download dataset for retention time prediction.
+import prospect_dataset as prods 
+prods.download_dataset('retention-time', SAVE_PATH, sample=True) # Download dataset for retention time prediction.
 ```
 
 Or, download and unzip from the [website](https://www.proteometools.org/).
