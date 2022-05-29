@@ -4,7 +4,7 @@ META_DATA = {
     "author": "Wassim Gabriel, Omar Shouman, Mathias Wilhelm",
     "author_email": "wassim.gabriel@tum.de, omar.shouman@tum.de",
     "description": "Proteomics Dataset for Machine Learning",
-    "package_name": "ProteomDS",
+    "package_name": "prospect-dataset",
     "copyright_text": "2022, Wilhelm Lab, TU Munich.",
-    "github_url": "https://github.com/wilhelm-lab/ProteomDS",
+    "github_url": "https://github.com/wilhelm-lab/PROSPECT",
 }
