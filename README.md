@@ -5,7 +5,7 @@
 ## Features
 
 * Access to a large annotated Mass Spectrometry dataset.
-* Utilities for reading, filtering, and splitting data.
+* Utilities for downloading and splitting data.
 
 ## Installation
 
