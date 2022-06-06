@@ -19,40 +19,40 @@ Please refer to the dataset [GitHub repository.](https://github.com/wilhelm-lab/
 
 The meta-data parquet file contains the following columns:
 
-- `raw_file`:
-- `scan_number`:
-- `modified_sequence`:
-- `precursor_charge`:
-- `precursor_intensity`: 
-- `mz`:
-- `precursor_mz`:
-- `fragmentation`:
-- `mass_analyzer`:
-- `retention_time`:
-- `indexed_retention_time`:
-- `andromeda_score`:
-- `peptide_length`:
-- `orig_collision_energy`:
-- `aligned_collision_energy`:
+- `raw_file`: Raw file name.
+- `scan_number`: Scan number of the MS/MS spectrum.
+- `modified_sequence`: Sequence representation with the post-translational modifications.
+- `precursor_charge`: The charge of the precursor ion.
+- `precursor_intensity`: The intensity of the precursor ion.
+- `mz [da]`: The theoritical mass over charge of the peptide sequence.
+- `precursor_mz [da]`: The mass over charge of the precursor ion.
+- `fragmentation`: The type of fragmentation method used (HCD, CID).
+- `mass_analyzer`: The type of mass analyzer used to record the spectra (ITMS: Ion Trap, FTMS: Orbi Trap)
+- `retention_time [min.]`: The uncalibrated retention time in minutes where the MS/MS spectrum has been acquired.
+- `indexed_retention_time`: Indexed retention time calculated based on the Retention Time.
+- `andromeda_score`: Andromeda score for the associated spectrum.
+- `peptide_length`: Length of the peptide sequence without modifications.
+- `orig_collision_energy`: Collison energy used to acquire the spectra.
+- `aligned_collision_energy`: Calibrated collision energy.
 
 
 Each annotation parquet file contains the following columns:
 
-- `ion_type`: 
-- `no`: 
-- `charge`: 
-- `experimental_mass`: 
-- `theoretical_mass`: 
-- `intensity`: 
-- `neutral_loss`: 
-- `fragment_score`: 
-- `peptide_sequence`: 
-- `scan_number`: 
-- `raw_file`: 
+- `ion_type`: Type of the fragment ion (y, b).
+- `no`: No of the fragment ion (1,n-1: n is the peptide length).
+- `charge`: Charge of the fragment ion
+- `experimental_mass [da]`: Mass of the experimental peak annotated.
+- `theoretical_mass [da]`: Theoritical mass of the fragment ion.
+- `intensity`: Normalized intensity of the peak.
+- `neutral_loss`: Molecules lost from fragment ion (Empty string if there is no neutral loss).
+- `fragment_score`: Score of the fragment ion to solve collisions.
+- `peptide_sequence`: ??
+- `scan_number`: Raw file name.
+- `raw_file`: Scan number of the MS/MS spectrum.
 
 
-
-
+Units:
+Da: The dalton or unified atomic mass unit (symbols: da)
 
 
 
