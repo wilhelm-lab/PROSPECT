@@ -26,7 +26,7 @@ import prospect_dataset as prods
 prods.download_dataset('retention-time', SAVE_PATH, sample=True) # Download dataset for retention time prediction.
 ```
 
-Or, download and unzip from the [Zenodo](https://doi.org/10.5281/zenodo.6602020).
+Or, download and unzip from [Zenodo](https://doi.org/10.5281/zenodo.6602020).
 
 ## Contribute
 
