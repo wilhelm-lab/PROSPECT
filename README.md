@@ -1,6 +1,6 @@
 # PROSPECT: Proteomics Dataset for Machine Learning
 
-[PROSPECT](https://doi.org/10.5281/zenodo.6602020) enables machine learning on proteomics tasks.
+[PROSPECT](https://doi.org/10.5281/zenodo.6602020) (PROteometools SPECTrum compendium) is a large annotated dataset leveraging the raw data from ProteomeTools [1].
 
 ## Features
 
@@ -41,8 +41,13 @@ The project is licensed under the [MIT license](https://github.com/wilhelm-lab/P
 
 The data is hosted on Zenodo [PROSPECT DOI](https://doi.org/10.5281/zenodo.6602020).
 
-## Reference
+## Citation
 
 If you use PROSPECT, please cite our paper:
 
 paper citation here
+
+## References
+
+
+[1] Daniel P Zolg, Mathias Wilhelm, Karsten Schnatbaum, Johannes Zerweck, Tobias Knaute, Bernard Delanghe, Derek J Bailey, Siegfried Gessulat, Hans-Christian Ehrlich, Maximilian Weininger, et al. Building proteometools based on a complete synthetic human proteome. Nature methods, 14(3):259–262, 2017.
