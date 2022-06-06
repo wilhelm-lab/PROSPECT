@@ -37,6 +37,10 @@ See the [Contributing]() section for details.
 
 The project is licensed under the [MIT license](https://github.com/wilhelm-lab/PROSPECT/blob/main/LICENSE).
 
+## Dataset Hosting
+
+The data is hosted on Zenodo [PROSPECT DOI](https://doi.org/10.5281/zenodo.6602020).
+
 ## Reference
 
 If you use PROSPECT, please cite our paper:
