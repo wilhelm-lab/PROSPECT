@@ -12,7 +12,7 @@
 Install with:
 
 ```
-pip install prospect-dataset
+pip install git+https://github.com/wilhelm-lab/PROSPECT
 ```
     
 ## Usage
@@ -23,7 +23,7 @@ pip install prospect-dataset
 From python:
 ```
 import prospect_dataset as prods 
-prods.download_dataset('retention-time', SAVE_PATH, sample=True) # Download dataset for retention time prediction.
+prods.download_dataset('retention-time', SAVE_PATH) # Download dataset for retention time prediction.
 ```
 
 Or, download and unzip from [Zenodo](https://doi.org/10.5281/zenodo.6602020).

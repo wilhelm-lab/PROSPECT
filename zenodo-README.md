@@ -46,7 +46,7 @@ Each annotation parquet file contains the following columns:
 - `intensity`: Normalized intensity of the peak.
 - `neutral_loss`: Molecules lost from fragment ion (Empty string if there is no neutral loss).
 - `fragment_score`: Score of the fragment ion to solve collisions.
-- `peptide_sequence`: ??
+- `peptide_sequence`: Sequence representation with the post-translational modifications.
 - `scan_number`: Raw file name.
 - `raw_file`: Scan number of the MS/MS spectrum.
 
