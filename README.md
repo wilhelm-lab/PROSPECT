@@ -18,20 +18,36 @@ pip install git+https://github.com/wilhelm-lab/PROSPECT
 ## Usage
 
 
-### Downloading a dataset
+### Downloading the Dataset
 
-From python:
+#### Using `prospectdataset`:
+
+1- Install and import the package
+
 ```
 import prospect_dataset as prods 
-prods.download_dataset('retention-time', SAVE_PATH) # Download dataset for retention time prediction.
 ```
 
-Or, download and unzip from [Zenodo](https://doi.org/10.5281/zenodo.6602020).
+To download data for retention time prediction only:
+```
+prods.download_dataset('retention-time', SAVE_PATH)
+```
 
-## Contribute
+To download data for MS/MS spectrum prediction:
+```
+prods.download_dataset('all', SAVE_PATH)
+```
 
-Contributions are welcome. If you have additional datasets, methods, or functionality, please contribute.
-See the [Contributing]() section for details.
+To download only one of the 12 packages (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in [Zenodo](https://doi.org/10.5281/zenodo.6602020).
+
+For example to download the package TUM_missing_first, the following would download the meta data file and the annotations zip files, then extract all annotation files.
+```
+prods.download_dataset('retention-time', SAVE_PATH, 'missing') 
+```
+
+#### From Zenodo:
+
+Download and unzip from [Zenodo](https://doi.org/10.5281/zenodo.6602020).
 
 ## License
 
@@ -48,6 +64,5 @@ If you use PROSPECT, please cite our paper:
 paper citation here
 
 ## References
-
 
 [1] Daniel P Zolg, Mathias Wilhelm, Karsten Schnatbaum, Johannes Zerweck, Tobias Knaute, Bernard Delanghe, Derek J Bailey, Siegfried Gessulat, Hans-Christian Ehrlich, Maximilian Weininger, et al. Building proteometools based on a complete synthetic human proteome. Nature methods, 14(3):259–262, 2017.
