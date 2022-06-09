@@ -25,7 +25,7 @@ def unique_urls(urls):
     return unique_urls
 
 
-def download_files(task='retention-time', save_directory = "", select_pool=None):
+def download_files(task='retention-time', save_directory = "", select_package=None):
     import urllib.request
     from urllib.parse import urlparse
     meta_data_files_only = False
@@ -39,8 +39,8 @@ def download_files(task='retention-time', save_directory = "", select_pool=None)
     if meta_data_files_only:
         urls = [u for u in urls if "meta_data" in u]
     
-    if select_pool:
-        urls = [u for u in urls if select_pool in u]
+    if select_package:
+        urls = [u for u in urls if select_package in u]
   
     print("Collected URLs: ", urls)
     downloaded_files = []
@@ -68,10 +68,10 @@ def unzip_annotation_files(files, extract_to_dir=""):
 
     return zip_files
 
-def download_dataset(task='retention-time', save_directory = "", select_pool=None):
+def download_dataset(task='retention-time', save_directory = "", select_package=None):
     os.makedirs(save_directory, exist_ok=True)
     
-    files = download_files(task, save_directory, select_pool)
+    files = download_files(task, save_directory, select_package)
     
     if task != "retention_time":
         zip_files = unzip_annotation_files(files, save_directory)
