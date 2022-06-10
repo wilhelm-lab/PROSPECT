@@ -25,7 +25,7 @@ pip install git+https://github.com/wilhelm-lab/PROSPECT
 1- Install and import the package
 
 ```
-import prospect_dataset as prods 
+import prospectdataset as prods 
 ```
 
 To download data for retention time prediction only:
