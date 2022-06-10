@@ -22,25 +22,23 @@ pip install git+https://github.com/wilhelm-lab/PROSPECT
 
 #### Using `prospectdataset`:
 
-1- Install and import the package
+- Install and import the package
 
 ```
 import prospectdataset as prods 
 ```
 
-To download data for retention time prediction only:
+- To download data for retention time prediction only:
 ```
 prods.download_dataset('retention-time', SAVE_PATH)
 ```
 
-To download data for MS/MS spectrum prediction:
+- To download data for MS/MS spectrum prediction:
 ```
 prods.download_dataset('all', SAVE_PATH)
 ```
 
-To download only one of the 12 packages (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in [Zenodo](https://doi.org/10.5281/zenodo.6602020).
-
-For example to download the package TUM_missing_first, the following would download the meta data file and the annotations zip files, then extract all annotation files.
+- To download only one of the 12 packages (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in [Zenodo](https://doi.org/10.5281/zenodo.6602020). For example to download the package TUM_missing_first, the following would download the meta data file and the annotations zip files, then extract all annotation files.
 ```
 prods.download_dataset('retention-time', SAVE_PATH, 'missing') 
 ```
@@ -55,7 +53,7 @@ The project is licensed under the [MIT license](https://github.com/wilhelm-lab/P
 
 ## Dataset Hosting
 
-The data is hosted on Zenodo [PROSPECT DOI](https://doi.org/10.5281/zenodo.6602020).
+The data is hosted on Zenodo [PROSPECT DOI](https://doi.org/10.5281/zenodo.6602020) and is licensed under Creative Commons Attribution 4.0 International.
 
 ## Citation
 
