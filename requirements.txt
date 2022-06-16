@@ -1,4 +1,5 @@
 pandas
 pyarrow
+fastparquet
 requests
 bs4
