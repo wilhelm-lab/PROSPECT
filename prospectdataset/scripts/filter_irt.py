@@ -1,28 +1,31 @@
 import argparse
 import pandas as pd
 import numpy as np
+import sys
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-f",
-        "--file_path",
-        help="Path to the file"
-    )
-    parser.add_argument(
-        "-thr",
-        "--threshold",
-        help="Threshold for filtering the var irt values",
-        default=2000
-    )
-    args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-f",
+    "--file_path",
+    help="Path to the file"
+)
+parser.add_argument(
+    "-thr",
+    "--threshold",
+    help="Threshold for filtering the var irt values",
+    default=2000
+)
+
+def main(sys_args=sys.argv[1:]):
+    args = parser.parse_args(sys_args)
 
     meta_data = pd.read_parquet(args.file_path, engine="fastparquet")
 
-
-    # Group by raw file and seq -> select only seq with max andromeda score
-    max_score_df = meta_data.sort_values(['andromeda_score'], ascending=False)\
+    # Group by raw file and seq -> seect only seq with max andromeda score
+    max_score_df = (
+        meta_data.sort_values(['andromeda_score'], ascending=False)
         .groupby(['modified_sequence', 'raw_file']).first().reset_index()
+    )
 
     # Group by seq -> calculate mean, var for irt
     md = max_score_df[["modified_sequence", "indexed_retention_time"]].groupby("modified_sequence")\

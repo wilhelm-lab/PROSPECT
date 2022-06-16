@@ -1,17 +1,19 @@
+import sys
 import argparse
 from pathlib import Path
 import pandas as pd
 import pyarrow.parquet as pq
 import pyarrow as pa
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-d",
-        "--dir_path",
-        help="Path to the directory with the metadata and annotation files"
-    )
-    args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-d",
+    "--dir_path",
+    help="Path to the directory with the metadata and annotation files"
+)
+
+def main(sys_args=sys.argv[1:]):
+    args = parser.parse_args(sys_args)
 
     # Merge meta_data files
     print("Merging the meta data files:")

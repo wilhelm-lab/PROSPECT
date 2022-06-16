@@ -1,9 +1,44 @@
-import numpy
+import sys
+import time
+import argparse
 import random
 import collections
-import argparse
+import numpy
 import pandas as pd
-import time
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--seed", default=42, help="A seed for RNG")
+parser.add_argument(
+    "-t",
+    "--trainingsplit",
+    default=0.9,
+    help="The fraction to use for training data (e.g. 0.9 would mean that the train-test split is 90-10 percent).",
+)
+
+parser.add_argument(
+    "-f",
+    "--splitfile",
+    help="Should the file split in two files: One with train one with validation/holdout data.",
+    action="store_true",
+)
+
+parser.add_argument(
+    "-m",
+    "--metadata",
+    help="Path to the metadata file"
+)
+parser.add_argument(
+    "-a",
+    "--annotation",
+    help="Path to the annotation file"
+)
+parser.add_argument(
+    "-thr",
+    "--threshold",
+    help="Threshold for Andromeda score",
+    default=70
+)
 
 
 def argshuffle_splits(idx, traininsplit):
@@ -33,43 +68,11 @@ def peptide_argsort(sequence_integer, seed=42):
     return indeces
 
 
-if __name__ == "__main__":
-
+def main(sys_args=sys.argv[1:]):
+    
     start = time.time()
-    parser = argparse.ArgumentParser()
-    parser.add_argument("path")
-    parser.add_argument("-s", "--seed", default=42, help="A seed for RNG")
-    parser.add_argument(
-        "-t",
-        "--trainingsplit",
-        default=0.9,
-        help="0.9 would mean that first 90% are train data and last 10% are validation/holdout data.",
-    )
 
-    parser.add_argument(
-        "-f",
-        "--splitfile",
-        help="Should the file split in two files: One with train one with validation/holdout data.",
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "-m",
-        "--metadata",
-        help="Path to the metadata file"
-    )
-    parser.add_argument(
-        "-a",
-        "--annotation",
-        help="Path to the annotation file"
-    )
-    parser.add_argument(
-        "-thr",
-        "--threshold",
-        help="Threshold for Andromeda score",
-        default=70
-    )
-    args = parser.parse_args()
+    args = parser.parse_args(sys_args)
 
     # Read the meta data and annotation files
     meta_data = pd.read_parquet(args.metadata, engine="fastparquet")

@@ -17,6 +17,13 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url=META_DATA['github_url'],
     packages=setuptools.find_packages(),
+    entry_points={
+            'console_scripts': [
+                'shuffle-split-data = prospectdataset.scripts.shuffle_split:main',
+                'merge-files = prospectdataset.scripts.merge_files:main',
+                'filter-irt = prospectdataset.scripts.filter_irt:main'
+            ]
+        },
     install_requires=[
         'numpy',
         'pandas',
