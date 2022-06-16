@@ -18,6 +18,7 @@ setuptools.setup(
     url=META_DATA['github_url'],
     packages=setuptools.find_packages(),
     install_requires=[
+        'numpy',
         'pandas',
         'fastparquet',
         'pyarrow',
