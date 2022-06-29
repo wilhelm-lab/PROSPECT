@@ -47,6 +47,16 @@ prods.download_dataset('retention-time', SAVE_PATH, 'missing')
 
 Download and unzip from [Zenodo](https://doi.org/10.5281/zenodo.6602020).
 
+### Splitting and Filtering Scripts
+
+The three following bash scripts can be used to perform data splitting, merge files, and to filter the retention time data (iRT). Once the package is installed, they arae accessbile as bash commands on the system level. Use the option ```-h``` to see the arguments of each script. 
+
+- ```shuffle-split-data```: Shuffle and split data
+
+- ```merge-files```: merge multiple files into one
+
+- ```filter-irt```: filter iRT data to prepare for training.
+
 ## License
 
 The project is licensed under the [MIT license](https://github.com/wilhelm-lab/PROSPECT/blob/main/LICENSE).
