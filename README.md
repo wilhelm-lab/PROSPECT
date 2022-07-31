@@ -63,7 +63,7 @@ The project is licensed under the [MIT license](https://github.com/wilhelm-lab/P
 
 ## Dataset Hosting
 
-The data is hosted on Zenodo [PROSPECT DOI](https://doi.org/10.5281/zenodo.6602020) and is licensed under Creative Commons Attribution 4.0 International.
+The dataset is hosted on Zenodo [PROSPECT DOI](https://doi.org/10.5281/zenodo.6602020) and is licensed under Creative Commons Attribution 4.0 International.
 
 ## Citation
 
