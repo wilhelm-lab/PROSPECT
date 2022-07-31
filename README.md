@@ -33,12 +33,12 @@ import prospectdataset as prods
 prods.download_dataset('retention-time', SAVE_PATH)
 ```
 
-- To download data for MS/MS spectrum prediction:
+- To download data for MS/MS spectrum prediction (includes both metadata and spectra):
 ```
 prods.download_dataset('all', SAVE_PATH)
 ```
 
-- To download only one of the 12 packages (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in [Zenodo](https://doi.org/10.5281/zenodo.6602020). For example to download the package TUM_missing_first, the following would download the meta data file and the annotations zip files, then extract all annotation files.
+- To download only one of the 12 packages (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in [Zenodo](https://doi.org/10.5281/zenodo.6602020). For example to download the package TUM_missing_first, the following would download the meta data file for the specfic package:
 ```
 prods.download_dataset('retention-time', SAVE_PATH, 'missing') 
 ```
@@ -49,7 +49,7 @@ Download and unzip from [Zenodo](https://doi.org/10.5281/zenodo.6602020).
 
 ### Splitting and Filtering Scripts
 
-The three following bash scripts can be used to perform data splitting, merge files, and to filter the retention time data (iRT). Once the package is installed, they arae accessbile as bash commands on the system level. Use the option ```-h``` to see the arguments of each script. 
+The three following bash scripts can be used to perform data splitting, merge files, and to filter the retention time data (iRT). Once the package is installed, they are accessbile as bash commands on the system level. Use the option ```-h``` to see the arguments of each script. 
 
 - ```shuffle-split-data```: Shuffle and split data
 
