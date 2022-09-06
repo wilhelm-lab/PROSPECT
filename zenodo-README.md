@@ -47,8 +47,8 @@ Each annotation parquet file contains the following columns:
 - `neutral_loss`: Molecules lost from fragment ion (Empty string if there is no neutral loss).
 - `fragment_score`: Score of the fragment ion to solve collisions.
 - `peptide_sequence`: Sequence representation with the post-translational modifications.
-- `scan_number`: Raw file name.
-- `raw_file`: Scan number of the MS/MS spectrum.
+- `scan_number`: Scan number of the MS/MS spectrum.
+- `raw_file`: Raw file name.
 
 
 Units:
