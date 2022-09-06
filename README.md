@@ -43,7 +43,7 @@ prods.download_dataset('all', SAVE_PATH)
 prods.download_dataset('retention-time', SAVE_PATH, 'missing') 
 ```
 
-- All downloaded files are in the parquet format. They can be easily read using panda's `pd.read_parquet()`. For faster loading, we recommend using `fastparquet` as an engine, but `pyarrow` also works.
+- All downloaded files are in the parquet format. They can be easily read using panda's `pd.read_parquet()`. For faster loading, we recommend using `fastparquet` as an engine, in case it fails for some reason, `pyarrow` can also be used.
 
 ```
 df = pd.read_parquet(PARQUET_FILEPATH, engine='fastparquet')
