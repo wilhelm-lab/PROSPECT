@@ -1,5 +1,5 @@
 import glob
-from os.path import join, splitext
+from os.path import dirname, join, splitext
 
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ COLUMNS_TO_DROP = ["precursor_intensity", "precursor_mz", "retention_time", "ori
 
 # check the keys
 
-def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_name=None, save_path=None):
+def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_name=None, save_filepath=None):
     #if (not annotations_data_dir and not metadata_path) or (not pool_name and not save_path):
     #    raise ValueError("You should either provide path to metadata and annotations or a pool name to download.")
     
@@ -24,7 +24,8 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
 
     # if a pool name is provided, trigger download
     if pool_name:
-        downloaded_files = download_dataset("all", save_path, pool_name)
+        save_dir = dirname(save_filepath)
+        downloaded_files = download_dataset("all", save_dir, pool_name)
         for f in downloaded_files:
             if f.endswith(".parquet"):
                 metadata_file_path = f
@@ -85,12 +86,11 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
     if "precursor_charge" in list(meta_data_merge.columns):
         meta_data_merge['precursor_charge_onehot'] = meta_data_merge['precursor_charge'].apply(precursor_int_to_onehot)
 
-    if not save_path:
+    if not save_filepath:
         # return dataframe in-memory
         return meta_data_merge
     
     # save to disk as parquet file and return file path
-    save_filepath = join(save_path, "processed_intensity_data.parquet")
     meta_data_merge.to_parquet(save_filepath, index=False)
     return save_filepath
 
