@@ -12,6 +12,9 @@ from .download import download_dataset
 COLUMNS_TO_DROP = ["precursor_intensity", "precursor_mz", "retention_time", "orig_collision_energy",
                    "indexed_retention_time", 'mz']
 
+
+# check the keys
+
 def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_name=None, save_path=None):
     #if (not annotations_data_dir and not metadata_path) or (not pool_name and not save_path):
     #    raise ValueError("You should either provide path to metadata and annotations or a pool name to download.")
@@ -29,7 +32,7 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
                 annotations_files_folder_path = splitext(f)[0]
 
     metadata_df = pd.read_parquet(metadata_file_path, engine='fastparquet')
-    columns_to_drop = list(set(metadata_df.columns).difference(set(COLUMNS_TO_DROP)))
+    columns_to_drop = list(set(metadata_df.columns).intersection(set(COLUMNS_TO_DROP)))
     metadata_df.drop(columns_to_drop, axis=1, inplace=True)
 
     annotation_files = glob.glob(join(annotations_files_folder_path, "*.parquet"), recursive=True)
