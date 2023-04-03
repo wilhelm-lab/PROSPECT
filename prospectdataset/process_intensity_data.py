@@ -70,13 +70,16 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
     meta_data_merge = metadata_df.merge(annotation_matrix_df, on=['raw_file','scan_number'], how='inner')
 
     # scale CE
-    meta_data_merge['collision_energy_aligned_normed'] = meta_data_merge['aligned_collision_energy'].apply(lambda x: x/100.0)
+    if "aligned_collision_energy" in list(meta_data_merge.columns):
+        meta_data_merge['collision_energy_aligned_normed'] = meta_data_merge['aligned_collision_energy'].apply(lambda x: x/100.0)
 
     # encoding fragmentation methods
-    meta_data_merge['method_nbr'] = meta_data_merge['fragmentation'].apply(lambda x: FRAGMENTATION_ENCODING[x])
+    if "fragmentation" in list(meta_data_merge.columns):
+        meta_data_merge['method_nbr'] = meta_data_merge['fragmentation'].map(FRAGMENTATION_ENCODING)
 
     # one-hot encoding  of precursor charge
-    meta_data_merge['precursor_charge_onehot'] = meta_data_merge['precursor_charge'].apply(precursor_int_to_onehot)
+    if "precursor_charge" in list(meta_data_merge.columns):
+        meta_data_merge['precursor_charge_onehot'] = meta_data_merge['precursor_charge'].apply(precursor_int_to_onehot)
 
     if not save_path:
         # return dataframe in-memory
