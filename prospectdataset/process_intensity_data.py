@@ -13,7 +13,7 @@ COLUMNS_TO_DROP = ["precursor_intensity", "precursor_mz", "retention_time", "ori
                    "indexed_retention_time", 'mz']
 
 def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_name=None, save_path=None):
-    if not (annotations_data_dir and metadata_path) or not (pool_name and save_path):
+    if (not annotations_data_dir and not metadata_path) or (not pool_name and not save_path):
         raise ValueError("You should either provide path to metadata and annotations or a pool name to download.")
     
     metadata_file_path = metadata_path
