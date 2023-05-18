@@ -13,32 +13,64 @@ COLUMNS_TO_DROP = ["precursor_intensity", "precursor_mz", "retention_time", "ori
                    "indexed_retention_time", 'mz']
 
 
-# check the keys
-
 def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_name=None, save_filepath=None):
+    
     #if (not annotations_data_dir and not metadata_path) or (not pool_name and not save_path):
     #    raise ValueError("You should either provide path to metadata and annotations or a pool name to download.")
     
-    metadata_file_path = metadata_path
-    annotations_files_folder_path = annotations_data_dir
-
     # if a pool name is provided, trigger download
     if pool_name:
         save_dir = dirname(save_filepath)
         downloaded_files = download_dataset("all", save_dir, pool_name)
         for f in downloaded_files:
             if f.endswith(".parquet"):
-                metadata_file_path = f
+                metadata_path = f
             if f.endswith(".zip"):
-                annotations_files_folder_path = splitext(f)[0]
+                annotations_data_dir = splitext(f)[0]
 
-    metadata_df = pd.read_parquet(metadata_file_path, engine='fastparquet')
+    # read meta data file
+    metadata_df = pd.read_parquet(metadata_path, engine='fastparquet')
     columns_to_drop = list(set(metadata_df.columns).intersection(set(COLUMNS_TO_DROP)))
     metadata_df.drop(columns_to_drop, axis=1, inplace=True)
 
-    annotation_files = glob.glob(join(annotations_files_folder_path, "*.parquet"), recursive=True)
+    # read annotation files
+    annotation_files = glob.glob(join(annotations_data_dir, "*.parquet"), recursive=True)
+    annotation_df = read_process_annotation_files(annotation_files)
 
+    # rename comlumns for fundamentals # ToDo
+    if "experimental_mass" in list(annotation_df.columns):
+        annotation_df.rename(columns={'experimental_mass':'exp_mass'}, inplace=True)
+
+    annotation_matrix_df = build_annotation_df(annotation_df, metadata_df)
+    del annotation_df
+
+    meta_data_merge = metadata_df.merge(annotation_matrix_df, on=['raw_file','scan_number'], how='inner')
+    del metadata_df
+
+    # scale CE
+    if "aligned_collision_energy" in list(meta_data_merge.columns):
+        meta_data_merge['collision_energy_aligned_normed'] = meta_data_merge['aligned_collision_energy'].apply(lambda x: x/100.0)
+
+    # encoding fragmentation methods
+    if "fragmentation" in list(meta_data_merge.columns):
+        meta_data_merge['method_nbr'] = meta_data_merge['fragmentation'].map(FRAGMENTATION_ENCODING)
+
+    # one-hot encoding  of precursor charge
+    if "precursor_charge" in list(meta_data_merge.columns):
+        meta_data_merge['precursor_charge_onehot'] = meta_data_merge['precursor_charge'].apply(precursor_int_to_onehot)
+
+    if not save_filepath:
+        # return dataframe in-memory
+        return meta_data_merge
+    
+    # save to disk as parquet file and return file path
+    meta_data_merge.to_parquet(save_filepath, index=False)
+    
+    return save_filepath
+
+def read_process_annotation_files(annotation_files):
     a_dfs = []
+
     for file in annotation_files:
         df = pd.read_parquet(file, engine='fastparquet')
         
@@ -62,37 +94,8 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
 
         a_dfs.append(df)
         del df
-
-    annotation_df = pd.concat(a_dfs)
-    del a_dfs
-
-    # for fundamentals
-    if "experimental_mass" in list(annotation_df.columns):
-        annotation_df.rename(columns={'experimental_mass':'exp_mass'}, inplace=True)
-
-    annotation_matrix_df = build_annotation_df(annotation_df, metadata_df)
-
-    meta_data_merge = metadata_df.merge(annotation_matrix_df, on=['raw_file','scan_number'], how='inner')
-
-    # scale CE
-    if "aligned_collision_energy" in list(meta_data_merge.columns):
-        meta_data_merge['collision_energy_aligned_normed'] = meta_data_merge['aligned_collision_energy'].apply(lambda x: x/100.0)
-
-    # encoding fragmentation methods
-    if "fragmentation" in list(meta_data_merge.columns):
-        meta_data_merge['method_nbr'] = meta_data_merge['fragmentation'].map(FRAGMENTATION_ENCODING)
-
-    # one-hot encoding  of precursor charge
-    if "precursor_charge" in list(meta_data_merge.columns):
-        meta_data_merge['precursor_charge_onehot'] = meta_data_merge['precursor_charge'].apply(precursor_int_to_onehot)
-
-    if not save_filepath:
-        # return dataframe in-memory
-        return meta_data_merge
     
-    # save to disk as parquet file and return file path
-    meta_data_merge.to_parquet(save_filepath, index=False)
-    return save_filepath
+    return pd.concat(a_dfs)
 
 def precursor_int_to_onehot(charge):
     precursor_charge = np.full((6), 0)
