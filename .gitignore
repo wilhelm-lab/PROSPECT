@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# notebooks data folder
+notebooks/data
+.DS_Store
