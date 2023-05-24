@@ -102,6 +102,8 @@ def precursor_int_to_onehot(charge):
     return precursor_charge
 
 def build_annotation_df(annotation_df, metadata_df):
+    import numpy as np
+    import pandas as pd
     from spectrum_fundamentals.annotation.annotation import generate_annotation_matrix
     from spectrum_fundamentals.mod_string import internal_without_mods
 
