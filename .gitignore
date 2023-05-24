@@ -130,3 +130,7 @@ dmypy.json
 
 # DS_Store
 .DS_Store
+
+# data folder under notebooks
+notebooks/data
+notebooks/.DS_Store
