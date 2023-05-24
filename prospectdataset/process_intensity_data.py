@@ -1,12 +1,6 @@
 import glob
 from os.path import dirname, join, splitext
 
-import numpy as np
-import pandas as pd
-from spectrum_fundamentals.annotation.annotation import generate_annotation_matrix
-from spectrum_fundamentals.constants import FRAGMENTATION_ENCODING
-from spectrum_fundamentals.mod_string import internal_without_mods
-
 from .download import download_dataset
 
 COLUMNS_TO_DROP = ["precursor_intensity", "precursor_mz", "retention_time", "orig_collision_energy",
@@ -14,10 +8,12 @@ COLUMNS_TO_DROP = ["precursor_intensity", "precursor_mz", "retention_time", "ori
 
 
 def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_name=None, save_filepath=None):
-    
+
+    import pandas as pd
+    from spectrum_fundamentals.constants import FRAGMENTATION_ENCODING
+
     #if (not annotations_data_dir and not metadata_path) or (not pool_name and not save_path):
     #    raise ValueError("You should either provide path to metadata and annotations or a pool name to download.")
-    
     # if a pool name is provided, trigger download
     if pool_name:
         save_dir = dirname(save_filepath)
@@ -69,6 +65,7 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
     return save_filepath
 
 def read_process_annotation_files(annotation_files):
+    import pandas as pd
     a_dfs = []
 
     for file in annotation_files:
@@ -98,11 +95,16 @@ def read_process_annotation_files(annotation_files):
     return pd.concat(a_dfs)
 
 def precursor_int_to_onehot(charge):
+    import numpy as np
+    
     precursor_charge = np.full((6), 0)
     precursor_charge[charge-1] = 1
     return precursor_charge
 
 def build_annotation_df(annotation_df, metadata_df):
+    from spectrum_fundamentals.annotation.annotation import generate_annotation_matrix
+    from spectrum_fundamentals.mod_string import internal_without_mods
+
     annotation_scans = annotation_df.groupby(['raw_file','scan_number'])
     
     charge_seq = metadata_df.groupby(['raw_file','scan_number']).agg({
