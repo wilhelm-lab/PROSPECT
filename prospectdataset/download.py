@@ -1,12 +1,14 @@
 import os
-from .config import ZENODO_BASE, ZENODO_RECORD
 import zipfile
 
-def get_all_urls(record=ZENODO_RECORD):
+from .config import AVAILABLE_DATASET_URLS, ZENODO_BASE
+
+
+def get_all_urls(record_url):
     import requests
     from bs4 import BeautifulSoup
 
-    reqs = requests.get(ZENODO_RECORD)
+    reqs = requests.get(record_url)
     soup = BeautifulSoup(reqs.text, 'html.parser')
 
     urls = []
@@ -25,15 +27,18 @@ def unique_urls(urls):
     return unique_urls
 
 
-def download_files(task='retention-time', save_directory = "", select_package=None):
+def download_files(record, task='retention-time', save_directory = "", select_package=None):
     import urllib.request
     from urllib.parse import urlparse
     meta_data_files_only = False
     
     if task == 'retention-time':
         meta_data_files_only = True
-  
-    urls = get_all_urls()
+    
+    print("Downloading dataset from Zenodo record", record)
+    print("Corresponding Zenodo URL is", AVAILABLE_DATASET_URLS[record])
+
+    urls = get_all_urls(AVAILABLE_DATASET_URLS[record])
     urls = unique_urls(filter_relevant_urls(urls))
   
     if meta_data_files_only:
@@ -68,11 +73,24 @@ def unzip_annotation_files(files, extract_to_dir=""):
 
     return zip_files
 
-def download_dataset(task='retention-time', save_directory = "", select_package=None):
+def download_dataset(record = "prospect", task="retention-time", save_directory = "", select_package=None):
     os.makedirs(save_directory, exist_ok=True)
+    all_files = []
     
-    files = download_files(task, save_directory, select_package)
+    if record not in AVAILABLE_DATASET_URLS.keys():
+        raise ValueError("Record {} not available. Available records are {}".format(record, AVAILABLE_DATASET_URLS.keys()))
+    if not isinstance(record, (str, list)):
+        raise ValueError("Record must be a string or list of strings.")
     
-    if task != "retention_time":
-        zip_files = unzip_annotation_files(files, save_directory)
-    return files + zip_files
+    # if record is a string, convert to list
+    if isinstance(record, str):
+        record = [record]
+    for rec in record:
+        files = download_files(rec, task, save_directory, select_package)
+        all_files.append(files)
+
+        if task != "retention_time":
+            unzip_annotation_files(files, save_directory)
+
+    return all_files
+
