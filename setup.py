@@ -3,7 +3,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-from prospectdataset.version import __version__, META_DATA
+from prospectdataset.version import META_DATA, __version__
 
 VERSION = __version__
 
@@ -30,7 +30,8 @@ setuptools.setup(
         'fastparquet',
         'pyarrow',
         'requests',
-        'bs4'
+        'bs4',
+        'pyteomics[Unimod]'
     ],
     extras_require={
         "dev": [
