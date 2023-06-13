@@ -7,7 +7,7 @@ COLUMNS_TO_DROP = ["precursor_intensity", "precursor_mz", "retention_time", "ori
                    "indexed_retention_time", 'mz']
 
 
-def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_name=None, save_filepath=None):
+def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_name=None, save_filepath=None, sequence_filtering_criteria=None):
 
     import pandas as pd
     from spectrum_fundamentals.constants import FRAGMENTATION_ENCODING
@@ -28,6 +28,10 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
     metadata_df = pd.read_parquet(metadata_path, engine='fastparquet')
     columns_to_drop = list(set(metadata_df.columns).intersection(set(COLUMNS_TO_DROP)))
     metadata_df.drop(columns_to_drop, axis=1, inplace=True)
+
+    # filter meta data
+    if sequence_filtering_criteria:
+        metadata_df = filter_metadata(metadata_df, sequence_filtering_criteria)
 
     # read annotation files
     annotation_files = glob.glob(join(annotations_data_dir, "*.parquet"), recursive=True)
@@ -63,6 +67,16 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
     meta_data_merge.to_parquet(save_filepath, index=False)
     
     return save_filepath
+
+def filter_metadata(df, sequence_filtering_criteria):
+
+        #"min_andromeda_score": "",
+        #    "max_peptide_length": self.seq_length,
+        #    "max_precursor_charge": 6,
+
+        # drop rows with precursor charge larger than 6
+
+    pass
 
 def read_process_annotation_files(annotation_files):
     import pandas as pd
