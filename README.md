@@ -39,7 +39,7 @@ pip install git+https://github.com/wilhelm-lab/PROSPECT
 import prospectdataset as prospect 
 ```
 
-- To download a specficic dataset, pass the respective record name:
+- To download a specficic dataset, pass one or more of the available record names `['prospect'`, `'prospectptm_tmt'`, `'prospectptm_multi_ptm'`, `'prospectptm_tmt_ptm'`, `'prospectptm_test_ptm']`:
 ```
 prospect.download_dataset(record = 'prospect', save_directory = SAVE_PATH)
 ```
