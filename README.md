@@ -27,7 +27,6 @@ pip install git+https://github.com/wilhelm-lab/PROSPECT
     
 ## Usage
 
-
 ### Downloading a Dataset
 
 #### Using `prospectdataset`:
@@ -54,7 +53,6 @@ print(prospect.AVAILABLE_DATASET_URLS)
  'prospectptm_test_ptm': 'https://zenodo.org/record/8003156'}
 ```
 
-
 - To download data for retention time prediction only:
 ```
 prospect.download_dataset(task = 'retention-time', SAVE_PATH)
@@ -76,7 +74,6 @@ prospect.download_dataset('retention-time', SAVE_PATH, 'missing')
 df = pd.read_parquet(PARQUET_FILEPATH, engine='fastparquet')
 ```
 
-
 #### From Zenodo:
 
 Download and unzip from the respective zenodo record, available records are:
@@ -85,7 +82,6 @@ Download and unzip from the respective zenodo record, available records are:
 - [PROSPECT PTM MULTI-PTM](https://zenodo.org/record/7998644)
 - [PROSPECT PTM TMT-PTM](https://zenodo.org/record/8003152)
 - [PROSPECT PTM TEST-PTM](https://zenodo.org/record/8003156)
-```
 
 ### Splitting and Filtering Scripts
 
@@ -117,9 +113,8 @@ If you use PROSPECT, please cite our paper [PROSPECT: Labeled Tandem Mass Spectr
 }
 ```
 
-
 ## References
 
 [1] Daniel P Zolg, Mathias Wilhelm, Karsten Schnatbaum, Johannes Zerweck, Tobias Knaute, Bernard Delanghe, Derek J Bailey, Siegfried Gessulat, Hans-Christian Ehrlich, Maximilian Weininger, et al. Building proteometools based on a complete synthetic human proteome. Nature methods, 14(3):259–262, 2017.
 
-[2] 21 PTMs paper ??
+[2] Zolg, D. P., Wilhelm, M., Schmidt, T., Médard, G., Zerweck, J., Knaute, T., ... & Kuster, B. (2018). ProteomeTools: Systematic characterization of 21 post-translational protein modifications by liquid chromatography tandem mass spectrometry (LC-MS/MS) using synthetic peptides. Molecular & Cellular Proteomics, 17(9), 1850-1863.
