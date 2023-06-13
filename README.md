@@ -1,6 +1,6 @@
 # PROSPECT & PROSPECT PTM: A Collection of Proteomics Datasets for Machine Learning and Deep Learning
 
-[PROSPECT](https://doi.org/10.5281/zenodo.6602020) and PROSPECT PTM (https://doi.org/10.5281/zenodo.7998644) (PROteometools SPECTrum compendium) are large annotated datasets, leveraging the raw data from ProteomeTools [1], [2].
+[PROSPECT](https://doi.org/10.5281/zenodo.6602020) and [PROSPECT PTM](https://doi.org/10.5281/zenodo.7998644) (PROteometools SPECTrum compendium) are large annotated datasets, leveraging the raw data from ProteomeTools [1] [2], including unmodified and modified peptide sequences (with Post-Translational Modifications, PTMs).
 
 ## Datasets
 
@@ -16,7 +16,7 @@ PROSPECT PTM Test-PTM dataset |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M
 
 ## Features
 
-* Access to a large annotated Mass Spectrometry dataset.
+* Access to a collection of large annotated Mass Spectrometry datasets including peptide sequences with Post-Translational Modifications (PTMs).
 * Utilities for downloading and splitting data.
 
 ## Installation
