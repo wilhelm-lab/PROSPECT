@@ -130,4 +130,10 @@ dmypy.json
 
 # notebooks data folder
 notebooks/data
+
+# notebooks for testing
+notebooks/_*
+
+# pdf files for plots
+notebooks/*.pdf
 .DS_Store
