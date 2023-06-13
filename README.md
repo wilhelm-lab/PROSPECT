@@ -8,11 +8,11 @@ The unmodified PROSPECT dataset includes examples without modifications. The PRO
 
 Dataset | Packages | Pools | Unique Peptides | Precursors | Sepctra | Annotated Peaks | Raw Peaks
 --- | --- | --- | --- |--- |--- |--- |---
-PROSPECT: Unmodified dataset | 12 | 983 | 838 K | 1.24 M | 61.7 M | 5.7 B | 24 B 
-PROSPECT PTM: TMT dataset | 11 | 1000 | 714 K | 820 K | 28.2 M | 1.8 B | 11.2 B 
-PROSPECT PTM: Multi-PTM dataset | 15 | 400 | 307 K | 413 K | 19.6 M | 2 B | 6 B 
-PROSPECT PTM: TMT-PTM dataset | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B 
-PROSPECT PTM: Test-PTM dataset |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M 
+PROSPECT<br> [Unmodified dataset](https://zenodo.org/record/6602020) | 12 | 983 | 838 K | 1.24 M | 61.7 M | 5.7 B | 24 B 
+PROSPECT PTM <br> [TMT dataset](https://zenodo.org/record/8003138) | 11 | 1000 | 714 K | 820 K | 28.2 M | 1.8 B | 11.2 B 
+PROSPECT PTM <br> [Multi-PTM dataset](https://zenodo.org/record/7998644) | 15 | 400 | 307 K | 413 K | 19.6 M | 2 B | 6 B 
+PROSPECT PTM <br> [TMT-PTM dataset](https://zenodo.org/record/8003152) | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B 
+PROSPECT PTM<br> [Test-PTM dataset](https://zenodo.org/record/8003156) |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M 
 
 ## Features
 
@@ -67,7 +67,12 @@ prospect.download_dataset(task = 'all', save_directory = SAVE_PATH)
 
 - To download only one package from a specific dataset (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in the respective Zenodo URL in the table. For example to download the package TUM_missing_first, the following would download the meta data file for the specfic package from the PROSPECT dataset:
 ```
-prospect.download_dataset(record = 'prospect', task = 'retention-time', save_directory = SAVE_PATH, select_package = 'missing') 
+prospect.download_dataset(
+    record = 'prospect', 
+    task = 'retention-time',
+    save_directory = SAVE_PATH,
+    select_package = 'missing'
+) 
 ```
 
 - All downloaded files are in the parquet format. They can be easily read using panda's `pd.read_parquet()`. For faster loading, we recommend using `fastparquet` as an engine, in case it fails for some reason, `pyarrow` can also be used.
@@ -105,7 +110,7 @@ The dataset is hosted on Zenodo [PROSPECT DOI](https://doi.org/10.5281/zenodo.66
 
 ## Citation
 
-If you use PROSPECT, please cite our paper [PROSPECT: Labeled Tandem Mass Spectrometry Dataset for Machine Learning in Proteomics](https://openreview.net/pdf?id=4nAe0PS7D-l):
+If you use PROSPECT and/or PROSPECT-PTM, please cite our papers [PROSPECT: Labeled Tandem Mass Spectrometry Dataset for Machine Learning in Proteomics](https://proceedings.neurips.cc/paper_files/paper/2022/hash/d42db1f74df54cb992b3956eb7f15a6f-Abstract-Datasets_and_Benchmarks.html):
 
 ```
 @inproceedings{prospect,
