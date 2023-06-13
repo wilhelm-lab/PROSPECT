@@ -106,7 +106,7 @@ The dataset is hosted on Zenodo [PROSPECT DOI](https://doi.org/10.5281/zenodo.66
 If you use PROSPECT, please cite our paper [PROSPECT: Labeled Tandem Mass Spectrometry Dataset for Machine Learning in Proteomics](https://openreview.net/pdf?id=4nAe0PS7D-l):
 
 ```
-@inproceedings{shoumanprospect,
+@inproceedings{prospect,
   title={PROSPECT: Labeled Tandem Mass Spectrometry Dataset for Machine Learning in Proteomics},
   author={Shouman, Omar and Gabriel, Wassim and Giurcoiu, Victor-George and Sternlicht, Vitor and Wilhelm, Mathias},
   booktitle={Thirty-sixth Conference on Neural Information Processing Systems Datasets and Benchmarks Track}
