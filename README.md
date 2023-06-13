@@ -4,6 +4,8 @@
 
 ## Datasets
 
+The unmodified PROSPECT dataset includes examples without modifications. The PROSPECT PTM datasets include 4 datasets, each representing a common subgroup of modified peptide sequences. Dataset TMT includes peptide sequences labeled with Tandem Mass Tags, which are introduced experimentally for multi-plex analysis of samples. Dataset Multi-PTM includes examples rich with 13 unique PTM-residue pairs occurring naturally on proteins. We also curated and annotated the dataset TMT-PTM, which includes six unique PTM-residue pairs occurring in TMT-labeled sequences. Dataset Test-PTM, comprises 21 unique PTM-residue pairs and is well-suited as a hold-out/test dataset.
+
 Dataset | Packages | Pools | Unique Peptides | Precursors | Sepctra | Annotated Peaks | Raw Peaks
 --- | --- | --- | --- |--- |--- |--- |---
 PROSPECT Unmodified dataset | 12 | 983 | 838 K | 1.24 M | 61.7 M | 5.7 B | 24 B 
