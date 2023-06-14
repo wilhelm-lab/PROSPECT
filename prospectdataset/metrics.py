@@ -1,8 +1,10 @@
-import numpy as np
+
 
 # code adopted and modified based on:
 # https://github.com/horsepurve/DeepRTplus/blob/cde829ef4bd8b38a216d668cf79757c07133b34b/RTdata_emb.py
 def timedelta_metric(y_true, y_pred, threshold=0.95, two_sided=False):
+    import numpy as np
+
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     
@@ -20,6 +22,8 @@ def timedelta_metric(y_true, y_pred, threshold=0.95, two_sided=False):
       
       
 def masked_spectral_distance(y_true, y_pred, epsilon = 1e-7):
+    import numpy as np
+    
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     

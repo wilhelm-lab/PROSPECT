@@ -31,7 +31,8 @@ setuptools.setup(
         'pyarrow',
         'requests',
         'bs4',
-        'pyteomics[Unimod]'
+        'pyteomics[Unimod]',
+        'spectrum_fundamentals @ git+https://github.com/wilhelm-lab/spectrum_fundamentals.git@main',
     ],
     extras_require={
         "dev": [
