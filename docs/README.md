@@ -39,12 +39,18 @@ pip install git+https://github.com/wilhelm-lab/PROSPECT
 import prospectdataset as prospect 
 ```
 
-- To download a specficic dataset, pass one or more of the available record names `['prospect'`, `'tmt'`, `'multi_ptm'`, `'tmt_ptm'`, `'test_ptm']`:
+- To download a specficic dataset, pass one or more of the available record names:
+    -  `prospect`
+    - `tmt`
+    - `multi_ptm`
+    - `tmt_ptm`
+    - `test_ptm`
 ```
 prospect.download_dataset(record = 'prospect', save_directory = SAVE_PATH)
 ```
 
 - Available record names and URLs can be displayed as follows:
+
 ```
 print(prospect.AVAILABLE_DATASET_URLS)
 
@@ -94,11 +100,11 @@ Download and unzip from the respective zenodo record, available records are:
 
 The three following bash scripts can be used to perform data splitting, merge files, and to filter the retention time data (iRT). Once the package is installed, they are accessbile as bash commands on the system level. Use the option ```-h``` to see the arguments of each script. 
 
-- ```shuffle-split-data```: Shuffle and split data
+- `shuffle-split-data`: Shuffle and split data
 
-- ```merge-files```: merge multiple files into one
+- `merge-files`: merge multiple files into one
 
-- ```filter-irt```: filter iRT data to prepare for training.
+- `filter-irt`: filter iRT data to prepare for training.
 
 ## License
 
