@@ -134,3 +134,5 @@ dmypy.json
 # data folder under notebooks
 notebooks/data
 notebooks/.DS_Store
+
+notebooks/_*.ipynb
