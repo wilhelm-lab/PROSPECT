@@ -1,4 +1,5 @@
 import glob
+import warnings
 from os.path import dirname, join, splitext
 
 from .download import download_dataset
@@ -70,13 +71,29 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
 
 def filter_metadata(df, sequence_filtering_criteria):
 
-        #"min_andromeda_score": "",
-        #    "max_peptide_length": self.seq_length,
-        #    "max_precursor_charge": 6,
+    # example
+    # criteria should be MODE_COLUMNNAME
+    # mode = {min, max}
+    # columnname = {metadata dataframe columns}
 
-        # drop rows with precursor charge larger than 6
+    # sequence_filtering_criteria = {
+    #    "min_andromeda_score": 0.1,
+    #    "max_peptide_length": 20,
+    #    "max_precursor_charge": 6,
+    # }
 
-    pass
+    for criteria, threshold in sequence_filtering_criteria.items():
+        mode, attribute = criteria.split("_", maxsplit=1)
+        print("mode: ", mode)
+        print("attribute: ", attribute)
+        if attribute not in df.columns:
+            warnings.warn(RuntimeWarning("Skipping attribute {attribute} since it is not in metadata columns {list(df.columns)}."))
+            continue
+        filter_query = f" {attribute} "
+        filter_query += " >= " if mode == "min" else " <= "
+        filter_query += str(threshold)
+        df = df.query(filter_query)
+    return df
 
 def read_process_annotation_files(annotation_files):
     import pandas as pd
