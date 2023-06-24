@@ -159,6 +159,9 @@ def build_annotation_df(annotation_df, metadata_df):
         except IndexError:
             print("IndexError: ", raw_file, scan_number)
             continue
+        except KeyError:
+            print("KeyError: ", raw_file, scan_number)
+            continue
         charge = charge_modseq.precursor_charge
         mod_sequence = charge_modseq.modified_sequence
 
