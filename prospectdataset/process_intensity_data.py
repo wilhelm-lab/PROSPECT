@@ -114,6 +114,7 @@ def read_process_annotation_files(annotation_files):
         # pick the annotation fragement ion with the highest fragment_score 
         if "fragment_score" in list(df.columns):
             df.sort_values(by='fragment_score', ascending=False, inplace=True)
+
         df.drop_duplicates(subset=['raw_file','scan_number', 'experimental_mass'], keep="first", inplace=True)
         
         # select peak with highest intensity
@@ -153,7 +154,11 @@ def build_annotation_df(annotation_df, metadata_df):
     for scan, spectrum in annotation_scans:
         # select the two columns from meta data
         raw_file, scan_number = scan
-        charge_modseq = charge_seq.loc[raw_file, scan_number]
+        try:
+            charge_modseq = charge_seq.loc[raw_file, scan_number]
+        except IndexError:
+            print("IndexError: ", raw_file, scan_number)
+            continue
         charge = charge_modseq.precursor_charge
         mod_sequence = charge_modseq.modified_sequence
 

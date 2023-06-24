@@ -27,7 +27,7 @@ def unique_urls(urls):
     return unique_urls
 
 
-def download_files(record, task='retention-time', save_directory = "", select_package=None):
+def download_files(record, task='retention-time', save_directory = "", select_pool=None):
     import urllib.request
     from urllib.parse import urlparse
     meta_data_files_only = False
@@ -44,8 +44,8 @@ def download_files(record, task='retention-time', save_directory = "", select_pa
     if meta_data_files_only:
         urls = [u for u in urls if "meta_data" in u]
     
-    if select_package:
-        urls = [u for u in urls if select_package in u]
+    if select_pool:
+        urls = [u for u in urls if select_pool in u]
   
     print("Collected URLs: ", urls)
     downloaded_files = []
@@ -73,7 +73,7 @@ def unzip_annotation_files(files, extract_to_dir=""):
 
     return zip_files
 
-def download_dataset(record = "prospect", task="retention-time", save_directory = "", select_package=None):
+def download_dataset(record = "prospect", task="retention-time", save_directory = "", select_pool=None):
     os.makedirs(save_directory, exist_ok=True)
     all_files = []
     
@@ -86,7 +86,7 @@ def download_dataset(record = "prospect", task="retention-time", save_directory 
     if isinstance(record, str):
         record = [record]
     for rec in record:
-        files = download_files(rec, task, save_directory, select_package)
+        files = download_files(rec, task, save_directory, select_pool)
         all_files.append(files)
 
         if task != "retention_time":
