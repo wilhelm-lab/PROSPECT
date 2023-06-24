@@ -1,5 +1,9 @@
+import glob
+import itertools
 import os
+import shutil
 import zipfile
+from pathlib import Path
 
 from .config import AVAILABLE_DATASET_URLS, ZENODO_BASE
 
@@ -73,6 +77,22 @@ def unzip_annotation_files(files, extract_to_dir=""):
 
     return zip_files
 
+def move_multipart_pools_to_one_folder(data_dir, select_pool):
+    meta_data_filepath = glob.glob(os.path.join(data_dir, "*"+str(select_pool)+"*meta_data.parquet"))[0]
+    annotation_dirs = [path for path in glob.glob(os.path.join(data_dir, "*"+str(select_pool)+"*")) if os.path.isdir(path)]
+    annotations_filepaths = [glob.glob(os.path.join(d, "*.parquet")) for d in annotation_dirs]
+    annotations_filepaths = list(itertools.chain(*annotations_filepaths))
+
+    pool_name = Path(meta_data_filepath).stem.split("_meta_data")[0]
+    new_pool_folder = os.path.join(data_dir, pool_name)
+    os.makedirs(new_pool_folder, exist_ok=True)
+    for f in annotations_filepaths:
+        shutil.move(f, new_pool_folder)
+    for d in annotation_dirs:
+        shutil.rmtree(d)
+    return True
+        
+
 def download_dataset(record = "prospect", task="retention-time", save_directory = "", select_pool=None):
     os.makedirs(save_directory, exist_ok=True)
     all_files = []
@@ -90,7 +110,14 @@ def download_dataset(record = "prospect", task="retention-time", save_directory 
         all_files.append(files)
 
         if task != "retention_time":
-            unzip_annotation_files(files, save_directory)
+            zip_files = unzip_annotation_files(files, save_directory)
+            
+            # a pool was downloaded and has multiple zip annotation files
+            if len(zip_files) > 1 and select_pool:
+                move_multipart_pools_to_one_folder(data_dir = save_directory, select_pool=select_pool)
+            else:
+                print('''No pool selected. If you intend to load the data using DLOmix,
+                please ensure you move files belonging to the same pool manually to one folder.''')
 
     return all_files
 

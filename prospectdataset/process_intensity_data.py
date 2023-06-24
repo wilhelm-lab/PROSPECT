@@ -26,28 +26,36 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
                 annotations_data_dir = splitext(f)[0]
 
     # read meta data file
+    print("Reading metadata file from", metadata_path)
     metadata_df = pd.read_parquet(metadata_path, engine='fastparquet')
     columns_to_drop = list(set(metadata_df.columns).intersection(set(COLUMNS_TO_DROP)))
     metadata_df.drop(columns_to_drop, axis=1, inplace=True)
 
-    # filter meta data
-    if sequence_filtering_criteria:
-        metadata_df = filter_metadata(metadata_df, sequence_filtering_criteria)
-
     # read annotation files
     annotation_files = glob.glob(join(annotations_data_dir, "*.parquet"), recursive=True)
+    
+    # time consuming ???
+    print("Reading and processing annotation files...")
     annotation_df = read_process_annotation_files(annotation_files)
 
     # rename comlumns for fundamentals # ToDo
     if "experimental_mass" in list(annotation_df.columns):
         annotation_df.rename(columns={'experimental_mass':'exp_mass'}, inplace=True)
 
+    # time consuming ???
+    print("Building annotation dataframe...")
     annotation_matrix_df = build_annotation_df(annotation_df, metadata_df)
     del annotation_df
 
     meta_data_merge = metadata_df.merge(annotation_matrix_df, on=['raw_file','scan_number'], how='inner')
     del metadata_df
 
+    print("Applying metadata filters...")
+    if sequence_filtering_criteria:
+        meta_data_merge = apply_metadata_filters(meta_data_merge, sequence_filtering_criteria)
+
+
+    print("Scaling and adding encoded columns...")
     # scale CE
     if "aligned_collision_energy" in list(meta_data_merge.columns):
         meta_data_merge['collision_energy_aligned_normed'] = meta_data_merge['aligned_collision_energy'].apply(lambda x: x/100.0)
@@ -59,7 +67,8 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
     # one-hot encoding  of precursor charge
     if "precursor_charge" in list(meta_data_merge.columns):
         meta_data_merge['precursor_charge_onehot'] = meta_data_merge['precursor_charge'].apply(precursor_int_to_onehot)
-
+    
+    
     if not save_filepath:
         # return dataframe in-memory
         return meta_data_merge
@@ -69,7 +78,7 @@ def download_process_pool(annotations_data_dir=None, metadata_path=None, pool_na
     
     return save_filepath
 
-def filter_metadata(df, sequence_filtering_criteria):
+def apply_metadata_filters(df, sequence_filtering_criteria):
 
     # example
     # criteria should be MODE_COLUMNNAME
@@ -87,7 +96,7 @@ def filter_metadata(df, sequence_filtering_criteria):
         print("mode: ", mode)
         print("attribute: ", attribute)
         if attribute not in df.columns:
-            warnings.warn(RuntimeWarning("Skipping attribute {attribute} since it is not in metadata columns {list(df.columns)}."))
+            warnings.warn(RuntimeWarning(f"Skipping attribute {attribute} since it is not in metadata columns {list(df.columns)}."))
             continue
         filter_query = f" {attribute} "
         filter_query += " >= " if mode == "min" else " <= "
@@ -100,14 +109,13 @@ def read_process_annotation_files(annotation_files):
     a_dfs = []
 
     for file in annotation_files:
-        df = pd.read_parquet(file, engine='fastparquet')
+        df = pd.read_parquet(file, engine='pyarrow')
         
         # filtering
         mask = ((df.neutral_loss) == "") & (df.ion_type != 'precursor')
         df = df[mask]
 
-        if "neutral_loss" in list(df.columns):
-            df.drop("neutral_loss", axis=1, inplace=True)
+        df.drop("neutral_loss", axis=1, inplace=True)
         
         # drop duplicates
         
