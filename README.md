@@ -10,18 +10,18 @@ The unmodified PROSPECT dataset includes examples without modifications. The PRO
 
 Dataset | Packages | Pools | Unique Peptides | Precursors | Sepctra | Annotated Peaks | Raw Peaks
 --- | --- | --- | --- |--- |--- |--- |---
-PROSPECT<br> [Unmodified dataset](https://zenodo.org/record/6602020) | 12 | 983 | 838 K | 1.24 M | 61.7 M | 5.7 B | 24 B 
-PROSPECT PTM <br> [TMT dataset](https://zenodo.org/record/8003138) | 11 | 1000 | 714 K | 820 K | 28.2 M | 1.8 B | 11.2 B 
-PROSPECT PTM <br> [Multi-PTM dataset](https://zenodo.org/record/7998644) | 15 | 400 | 307 K | 413 K | 19.6 M | 2 B | 6 B 
-PROSPECT PTM <br> [TMT-PTM dataset](https://zenodo.org/record/8003152) | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B 
-PROSPECT PTM<br> [Test-PTM dataset](https://zenodo.org/record/8003156) |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M 
+PROSPECT<br> [Unmodified dataset](https://zenodo.org/record/6602020) | 12 | 983 | 838 K | 1.24 M | 61.7 M | 5.7 B | 24 B
+PROSPECT PTM <br> [TMT dataset](https://zenodo.org/record/8003138) | 11 | 1000 | 714 K | 820 K | 28.2 M | 1.8 B | 11.2 B
+PROSPECT PTM <br> [Multi-PTM dataset](https://zenodo.org/record/7998644) | 15 | 400 | 307 K | 413 K | 19.6 M | 2 B | 6 B
+PROSPECT PTM <br> [TMT-PTM dataset](https://zenodo.org/record/8003152) | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B
+PROSPECT PTM<br> [Test-PTM dataset](https://zenodo.org/record/8003156) |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M
 Dataset | Packages | Pools | Unique Peptides | Precursors | Sepctra | Annotated Peaks | Raw Peaks
 --- | --- | --- | --- |--- |--- |--- |---
-PROSPECT<br> [Unmodified dataset](https://zenodo.org/record/6602020) | 12 | 983 | 838 K | 1.24 M | 61.7 M | 5.7 B | 24 B 
-PROSPECT PTM <br> [TMT dataset](https://zenodo.org/record/8003138) | 11 | 1000 | 714 K | 820 K | 28.2 M | 1.8 B | 11.2 B 
-PROSPECT PTM <br> [Multi-PTM dataset](https://zenodo.org/record/7998644) | 15 | 400 | 307 K | 413 K | 19.6 M | 2 B | 6 B 
-PROSPECT PTM <br> [TMT-PTM dataset](https://zenodo.org/record/8003152) | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B 
-PROSPECT PTM<br> [Test-PTM dataset](https://zenodo.org/record/8003156) |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M 
+PROSPECT<br> [Unmodified dataset](https://zenodo.org/record/6602020) | 12 | 983 | 838 K | 1.24 M | 61.7 M | 5.7 B | 24 B
+PROSPECT PTM <br> [TMT dataset](https://zenodo.org/record/8003138) | 11 | 1000 | 714 K | 820 K | 28.2 M | 1.8 B | 11.2 B
+PROSPECT PTM <br> [Multi-PTM dataset](https://zenodo.org/record/7998644) | 15 | 400 | 307 K | 413 K | 19.6 M | 2 B | 6 B
+PROSPECT PTM <br> [TMT-PTM dataset](https://zenodo.org/record/8003152) | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B
+PROSPECT PTM<br> [Test-PTM dataset](https://zenodo.org/record/8003156) |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M
 
 ## Features
 
@@ -35,7 +35,7 @@ Install with:
 ```
 pip install git+https://github.com/wilhelm-lab/PROSPECT
 ```
-    
+
 ## Usage
 
 ### Downloading a Dataset
@@ -45,7 +45,7 @@ pip install git+https://github.com/wilhelm-lab/PROSPECT
 - Install and import the package
 
 ```
-import prospectdataset as prods 
+import prospectdataset as prods
 ```
 
 - To download data for retention time prediction only:
@@ -63,7 +63,7 @@ prospect.download_dataset(task = 'all', save_directory = SAVE_PATH)
 - To download only one package from a specific dataset (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in the respective Zenodo URL in the table. For example to download the package TUM_missing_first, the following would download the meta data file for the specfic package from the PROSPECT dataset:
 - To download only one package from a specific dataset (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in the respective Zenodo URL in the table. For example to download the package TUM_missing_first, the following would download the meta data file for the specfic package from the PROSPECT dataset:
 ```
-prods.download_dataset('retention-time', SAVE_PATH, 'missing') 
+prods.download_dataset('retention-time', SAVE_PATH, 'missing')
 ```
 
 - All downloaded files are in the parquet format. They can be easily read using panda's `pd.read_parquet()`. For faster loading, we recommend using `fastparquet` as an engine, in case it fails for some reason, `pyarrow` can also be used.
@@ -78,7 +78,7 @@ Download and unzip from [Zenodo](https://doi.org/10.5281/zenodo.6602020).
 
 ### Splitting and Filtering Scripts
 
-The three following bash scripts can be used to perform data splitting, merge files, and to filter the retention time data (iRT). Once the package is installed, they are accessbile as bash commands on the system level. Use the option ```-h``` to see the arguments of each script. 
+The three following bash scripts can be used to perform data splitting, merge files, and to filter the retention time data (iRT). Once the package is installed, they are accessbile as bash commands on the system level. Use the option ```-h``` to see the arguments of each script.
 
 - ```shuffle-split-data```: Shuffle and split data
 

@@ -8,30 +8,30 @@ from prospectdataset.version import META_DATA, __version__
 VERSION = __version__
 
 setuptools.setup(
-    name=META_DATA['package_name'].lower(),
+    name=META_DATA["package_name"].lower(),
     version=VERSION,
-    author=META_DATA['author'],
-    author_email=META_DATA['author_email'],
-    description=META_DATA['description'],
+    author=META_DATA["author"],
+    author_email=META_DATA["author_email"],
+    description=META_DATA["description"],
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url=META_DATA['github_url'],
+    url=META_DATA["github_url"],
     packages=setuptools.find_packages(),
     entry_points={
-            'console_scripts': [
-                'shuffle-split-data = prospectdataset.scripts.shuffle_split:main',
-                'merge-files = prospectdataset.scripts.merge_files:main',
-                'filter-irt = prospectdataset.scripts.filter_irt:main'
-            ]
-        },
+        "console_scripts": [
+            "shuffle-split-data = prospectdataset.scripts.shuffle_split:main",
+            "merge-files = prospectdataset.scripts.merge_files:main",
+            "filter-irt = prospectdataset.scripts.filter_irt:main",
+        ]
+    },
     install_requires=[
-        'numpy',
-        'pandas',
-        'fastparquet',
-        'pyarrow',
-        'requests',
-        'bs4',
-        'spectrum_fundamentals @ git+https://github.com/wilhelm-lab/spectrum_fundamentals.git@main',
+        "numpy",
+        "pandas",
+        "fastparquet",
+        "pyarrow",
+        "requests",
+        "bs4",
+        "spectrum_fundamentals @ git+https://github.com/wilhelm-lab/spectrum_fundamentals.git@main",
     ],
     extras_require={
         "dev": [
@@ -51,6 +51,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Development Status :: 1 - Planning",
-        "Intended Audience :: Science/Research"
+        "Intended Audience :: Science/Research",
     ],
 )
