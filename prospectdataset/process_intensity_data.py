@@ -19,7 +19,7 @@ def download_process_pool(
     metadata_path=None,
     pool_name=None,
     save_filepath=None,
-    sequence_filtering_criteria=None,
+    metadata_filtering_criteria=None,
 ):
     import pandas as pd
     from spectrum_fundamentals.constants import FRAGMENTATION_ENCODING
@@ -66,9 +66,9 @@ def download_process_pool(
     del metadata_df
 
     print("Applying metadata filters...")
-    if sequence_filtering_criteria:
+    if metadata_filtering_criteria:
         meta_data_merge = apply_metadata_filters(
-            meta_data_merge, sequence_filtering_criteria
+            meta_data_merge, metadata_filtering_criteria
         )
 
     print("Scaling and adding encoded columns...")
@@ -100,32 +100,26 @@ def download_process_pool(
     return save_filepath
 
 
-def apply_metadata_filters(df, sequence_filtering_criteria):
+def apply_metadata_filters(df, metadata_filtering_criteria):
     # example
-    # criteria should be MODE_COLUMNNAME
-    # mode = {min, max}
-    # columnname = {metadata dataframe columns}
-
-    # sequence_filtering_criteria = {
-    #    "min_andromeda_score": 0.1,
-    #    "max_peptide_length": 20,
-    #    "max_precursor_charge": 6,
+    # metadata_filtering_criteria = {
+    #    "andromeda_score" :">= 0.1",
+    #    "peptide_length": "<= 20",
+    #    "precursor_charge": "<= 6",
     # }
 
-    for criteria, threshold in sequence_filtering_criteria.items():
-        mode, attribute = criteria.split("_", maxsplit=1)
-        print("mode: ", mode)
-        print("attribute: ", attribute)
-        if attribute not in df.columns:
+    for column_name, condition in metadata_filtering_criteria.items():
+        print("Filtering Column: ", column_name)
+        print("Condition: ", condition)
+
+        if column_name not in df.columns:
             warnings.warn(
                 RuntimeWarning(
-                    f"Skipping attribute {attribute} since it is not in metadata columns {list(df.columns)}."
+                    f"Skipping attribute {column_name} since it is not in metadata columns {list(df.columns)}."
                 )
             )
             continue
-        filter_query = f" {attribute} "
-        filter_query += " >= " if mode == "min" else " <= "
-        filter_query += str(threshold)
+        filter_query = column_name.strip() + condition.strip()
         df = df.query(filter_query)
     return df
 
