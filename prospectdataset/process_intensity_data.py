@@ -14,12 +14,14 @@ COLUMNS_TO_DROP = [
 ]
 
 
+# ??? ToDo: split download and process into two functions
 def download_process_pool(
     annotations_data_dir=None,
     metadata_path=None,
     pool_name=None,
     save_filepath=None,
     metadata_filtering_criteria=None,
+    parquet_engine="fastparquet",
 ):
     import pandas as pd
     from spectrum_fundamentals.constants import FRAGMENTATION_ENCODING
@@ -28,6 +30,7 @@ def download_process_pool(
     #    raise ValueError("You should either provide path to metadata and annotations or a pool name to download.")
     # if a pool name is provided, trigger download
     if pool_name:
+        print("Downloading pool: ", pool_name)
         save_dir = dirname(save_filepath)
         downloaded_files = download_dataset("all", save_dir, pool_name)
         for f in downloaded_files:
@@ -36,9 +39,13 @@ def download_process_pool(
             if f.endswith(".zip"):
                 annotations_data_dir = splitext(f)[0]
 
+    print("-" * 80)
+    print("Starting processing and filtering the pool, this may take a while...")
+    print("-" * 80)
+
     # read meta data file
     print("Reading metadata file from", metadata_path)
-    metadata_df = pd.read_parquet(metadata_path, engine="fastparquet")
+    metadata_df = pd.read_parquet(metadata_path, engine=parquet_engine)
     columns_to_drop = list(set(metadata_df.columns).intersection(set(COLUMNS_TO_DROP)))
     metadata_df.drop(columns_to_drop, axis=1, inplace=True)
 
@@ -124,15 +131,17 @@ def apply_metadata_filters(df, metadata_filtering_criteria):
     return df
 
 
-def read_process_annotation_files(annotation_files):
+def read_process_annotation_files(annotation_files, parquet_engine="fastparquet"):
     import pandas as pd
 
     a_dfs = []
 
     for file in annotation_files:
-        df = pd.read_parquet(file, engine="pyarrow")
+        print("Reading file: ", file)
+        df = pd.read_parquet(file, engine=parquet_engine)
 
         # filtering
+        print("Filtering annotation file...")
         mask = ((df.neutral_loss) == "") & (df.ion_type != "precursor")
         df = df[mask]
 
@@ -142,8 +151,10 @@ def read_process_annotation_files(annotation_files):
 
         # pick the annotation fragement ion with the highest fragment_score
         if "fragment_score" in list(df.columns):
+            print("Sorting by fragment_score...")
             df.sort_values(by="fragment_score", ascending=False, inplace=True)
 
+        print("Dropping duplicates...")
         df.drop_duplicates(
             subset=["raw_file", "scan_number", "experimental_mass"],
             keep="first",
@@ -151,7 +162,10 @@ def read_process_annotation_files(annotation_files):
         )
 
         # select peak with highest intensity
+        print("Sorting by intensity...")
         df.sort_values(by="intensity", ascending=False, inplace=True)
+
+        print("Dropping duplicates...")
         df.drop_duplicates(
             subset=["raw_file", "scan_number", "ion_type", "no", "charge"],
             keep="first",
@@ -160,6 +174,8 @@ def read_process_annotation_files(annotation_files):
 
         a_dfs.append(df)
         del df
+        print("Done.")
+        print("-" * 80)
 
     return pd.concat(a_dfs)
 
@@ -178,8 +194,10 @@ def build_annotation_df(annotation_df, metadata_df):
     from spectrum_fundamentals.annotation.annotation import generate_annotation_matrix
     from spectrum_fundamentals.mod_string import internal_without_mods
 
+    print("Grouping annotation by scan number and raw file...")
     annotation_scans = annotation_df.groupby(["raw_file", "scan_number"])
 
+    print("Grouping metadata by scan number and raw file...")
     charge_seq = metadata_df.groupby(["raw_file", "scan_number"]).agg(
         {
             "precursor_charge": lambda x: np.unique(x)[0],
