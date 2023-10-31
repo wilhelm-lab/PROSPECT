@@ -1,11 +1,11 @@
+import argparse
+import collections
+import random
 import sys
 import time
-import argparse
-import random
-import collections
+
 import numpy
 import pandas as pd
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--seed", default=42, help="A seed for RNG")
@@ -23,21 +23,10 @@ parser.add_argument(
     action="store_true",
 )
 
+parser.add_argument("-m", "--metadata", help="Path to the metadata file")
+parser.add_argument("-a", "--annotation", help="Path to the annotation file")
 parser.add_argument(
-    "-m",
-    "--metadata",
-    help="Path to the metadata file"
-)
-parser.add_argument(
-    "-a",
-    "--annotation",
-    help="Path to the annotation file"
-)
-parser.add_argument(
-    "-thr",
-    "--threshold",
-    help="Threshold for Andromeda score",
-    default=70
+    "-thr", "--threshold", help="Threshold for Andromeda score", default=70
 )
 
 
@@ -69,14 +58,13 @@ def peptide_argsort(sequence_integer, seed=42):
 
 
 def main(sys_args=sys.argv[1:]):
-    
     start = time.time()
 
     args = parser.parse_args(sys_args)
 
     # Read the meta data and annotation files
     meta_data = pd.read_parquet(args.metadata, engine="fastparquet")
-    annotation_df = pd.read_parquet(args.annotation, engine='fastparquet')
+    annotation_df = pd.read_parquet(args.annotation, engine="fastparquet")
 
     # Filter meta data based on Andromeda score threshold
     initial_size = len(meta_data)
@@ -93,28 +81,36 @@ def main(sys_args=sys.argv[1:]):
     del sequence_integer
     print("shuffling train and test")
     train_idx, test_idx = argshuffle_splits(idx, n_split)
-    
+
     if args.splitfile:
         meta_data_train = meta_data.iloc[train_idx]
         meta_data_test = meta_data.iloc[test_idx]
 
-        annotation_df_train = annotation_df[annotation_df["scan_number"].isin(meta_data_train["SCAN_NUMBER"])]
-        annotation_df_test = annotation_df[annotation_df["scan_number"].isin(meta_data_test["SCAN_NUMBER"])]
+        annotation_df_train = annotation_df[
+            annotation_df["scan_number"].isin(meta_data_train["SCAN_NUMBER"])
+        ]
+        annotation_df_test = annotation_df[
+            annotation_df["scan_number"].isin(meta_data_test["SCAN_NUMBER"])
+        ]
 
         # Save training + testing annotation and metadata files as parquet files
-        meta_data_train.to_parquet('meta_data_train.parquet', compression='gzip')
-        meta_data_test.to_parquet('meta_data_test.parquet', compression='gzip')
+        meta_data_train.to_parquet("meta_data_train.parquet", compression="gzip")
+        meta_data_test.to_parquet("meta_data_test.parquet", compression="gzip")
 
-        annotation_df_train.to_parquet('annotation_train.parquet', compression='gzip')
-        annotation_df_test.to_parquet('annotation_test.parquet', compression='gzip')
-        
+        annotation_df_train.to_parquet("annotation_train.parquet", compression="gzip")
+        annotation_df_test.to_parquet("annotation_test.parquet", compression="gzip")
+
     else:
         dx = train_idx + test_idx
         meta_data_combined = meta_data.iloc[dx]
-        annotation_combined = annotation_df[annotation_df["scan_number"].isin(meta_data["SCAN_NUMBER"])]
-        
-        meta_data_combined.to_parquet('meta_data_combined.parquet', compression='gzip')
-        annotation_combined.to_parquet('annotation_combined.parquet', compression='gzip')
+        annotation_combined = annotation_df[
+            annotation_df["scan_number"].isin(meta_data["SCAN_NUMBER"])
+        ]
+
+        meta_data_combined.to_parquet("meta_data_combined.parquet", compression="gzip")
+        annotation_combined.to_parquet(
+            "annotation_combined.parquet", compression="gzip"
+        )
 
     end = time.time()
-    print("Time:", end-start)
+    print("Time:", end - start)
