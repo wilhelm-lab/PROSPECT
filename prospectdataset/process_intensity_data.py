@@ -172,6 +172,8 @@ def read_process_annotation_files(annotation_files, parquet_engine="fastparquet"
             inplace=True,
         )
 
+        ##To get from metadata --> send raw file and  scan number  --> get charge
+
         a_dfs.append(df)
         del df
         print("Done.")
@@ -210,11 +212,20 @@ def build_annotation_df(annotation_df, metadata_df):
     masses_raw = []
     scans = []
     raw_files = []
+
+    # new column with apply function --> get unmodified sequence
+
     for scan, spectrum in annotation_scans:
         # select the two columns from meta data
         raw_file, scan_number = scan
+
         try:
             charge_modseq = charge_seq.loc[raw_file, scan_number]
+            charge, mod_sequence = meta_data[
+                (meta_data["scan_number"] == scan[1])
+                & (meta_data["raw_file"] == scan[0])
+            ][["precursor_charge", "modified_sequence"]].values[0]
+
         except IndexError:
             print("IndexError: ", raw_file, scan_number)
             continue
