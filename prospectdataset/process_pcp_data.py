@@ -2,7 +2,6 @@ import os
 import re
 
 import pandas as pd
-from tqdm import tqdm
 
 
 def combine_files_into_df(
@@ -452,7 +451,7 @@ def process_pcp_data(
 
     df = aggregate_unique_sequences(df)
 
-    df, padding_length = remove_rare_sequence_lengths(df)
+    df, max_seq_length = remove_rare_sequence_lengths(df)
 
     df = select_most_abundant_charge_by_intensity(df, aggregation="max")
     df = select_most_abundant_charge_by_intensity(df, aggregation="avg")
@@ -461,18 +460,22 @@ def process_pcp_data(
 
     df = compute_normalized_intensity_distribution(df)
 
-    save_df_as_parquet(df, data_dir=data_dir, file_name="preprocessed_pcp_data.parquet")
+    save_df_as_parquet(
+        df,
+        data_dir="/mnt/c/Users/Florian/Desktop/Uni/MSc/FoPr",
+        file_name="preprocessed_pcp_data.parquet",
+    )
 
     print("Data processing completed.")
     print("_" * 80)
     print("Sample of processed data:")
     print(df.head())
-    return df, padding_length
+    return df, max_seq_length
 
 
 # Example usage:
 process_pcp_data(
-    data_dir="../data",
+    data_dir="../data/",
     threshold=70,
     columns_to_keep=["modified_sequence", "precursor_charge", "precursor_intensity"],
     charge_list=[1, 2, 3, 4, 5, 6],
