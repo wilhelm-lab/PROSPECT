@@ -419,7 +419,6 @@ def process_pcp_data(
     columns_to_keep=["modified_sequence", "precursor_charge", "precursor_intensity"],
     charge_list=[1, 2, 3, 4, 5, 6],
     min_count=None,
-    k=1,
     aggregation="max",
 ):
     """
@@ -480,6 +479,5 @@ process_pcp_data(
     columns_to_keep=["modified_sequence", "precursor_charge", "precursor_intensity"],
     charge_list=[1, 2, 3, 4, 5, 6],
     min_count=None,
-    k=1,
     aggregation="max",
 )
