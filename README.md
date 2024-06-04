@@ -1,6 +1,6 @@
 # PROSPECT & PROSPECT PTM: A Collection of Proteomics Datasets for Machine Learning and Deep Learning
 
-[PROSPECT](https://doi.org/10.5281/zenodo.6602020) and [PROSPECT PTM](https://doi.org/10.5281/zenodo.7998644) (PROteometools SPECTrum compendium) are large annotated datasets, leveraging the raw data from ProteomeTools [1] [2], including unmodified and modified peptide sequences (with Post-Translational Modifications, PTMs).
+[PROSPECT](https://doi.org/10.5281/zenodo.6602020) and [PROSPECT PTM](https://doi.org/10.5281/zenodo.11472525) (PROteometools SPECTrum compendium) are large annotated datasets, leveraging the raw data from ProteomeTools [1] [2], including unmodified and modified peptide sequences (with Post-Translational Modifications, PTMs).
 
 ## Datasets
 
@@ -11,10 +11,10 @@ The unmodified PROSPECT dataset includes examples without modifications. The PRO
 Dataset | Packages | Pools | Unique Peptides | Precursors | Sepctra | Annotated Peaks | Raw Peaks
 --- | --- | --- | --- |--- |--- |--- |---
 PROSPECT<br> [Unmodified dataset](https://zenodo.org/record/6602020) | 12 | 983 | 838 K | 1.24 M | 61.7 M | 5.7 B | 24 B
-PROSPECT PTM <br> [TMT dataset](https://zenodo.org/record/8003138) | 11 | 1000 | 714 K | 820 K | 28.2 M | 1.8 B | 11.2 B
-PROSPECT PTM <br> [Multi-PTM dataset](https://zenodo.org/record/7998644) | 15 | 400 | 307 K | 413 K | 19.6 M | 2 B | 6 B
-PROSPECT PTM <br> [TMT-PTM dataset](https://zenodo.org/record/8003152) | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B
-PROSPECT PTM<br> [Test-PTM dataset](https://zenodo.org/record/8003156) |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M
+PROSPECT PTM <br> [TMT dataset](https://zenodo.org/record/8221499) | 11 | 1000 | 714 K | 820 K | 28.2 M | 1.8 B | 11.2 B
+PROSPECT PTM <br> [Multi-PTM dataset](https://zenodo.org/record/11472525) | 15 | 400 | 307 K | 413 K | 19.6 M | 2 B | 6 B
+PROSPECT PTM <br> [TMT-PTM dataset](https://zenodo.org/record/11474099) | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B
+PROSPECT PTM<br> [Test-PTM dataset](https://zenodo.org/record/11477731) |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M
 
 ## Features
 
@@ -51,10 +51,10 @@ prospect.download_dataset(record = 'prospect', save_directory = SAVE_PATH)
 print(prospect.AVAILABLE_DATASET_URLS)
 
 {'prospect': 'https://zenodo.org/record/6602020',
- 'multi_ptm': 'https://zenodo.org/record/7998644',
- 'tmt': 'https://zenodo.org/record/8003138',
- 'tmt_ptm': 'https://zenodo.org/record/8003152',
- 'test_ptm': 'https://zenodo.org/record/8003156'}
+ 'multi_ptm': 'https://zenodo.org/record/11472525',
+ 'tmt': 'https://zenodo.org/record/8221499',
+ 'tmt_ptm': 'https://zenodo.org/record/11474099',
+ 'test_ptm': 'https://zenodo.org/record/11477731'}
 ```
 
 - To download data for retention time prediction only:
@@ -87,10 +87,10 @@ df = pd.read_parquet(PARQUET_FILEPATH, engine='fastparquet')
 
 Download and unzip from the respective zenodo record, available records are:
 - [PROSPECT](https://zenodo.org/record/6602020)
-- [PROSPECT PTM TMT](https://zenodo.org/record/8003138)
-- [PROSPECT PTM MULTI-PTM](https://zenodo.org/record/7998644)
-- [PROSPECT PTM TMT-PTM](https://zenodo.org/record/8003152)
-- [PROSPECT PTM TEST-PTM](https://zenodo.org/record/8003156)
+- [PROSPECT PTM TMT](https://zenodo.org/record/8221499)
+- [PROSPECT PTM MULTI-PTM](https://zenodo.org/record/11472525)
+- [PROSPECT PTM TMT-PTM](https://zenodo.org/record/11474099)
+- [PROSPECT PTM TEST-PTM](https://zenodo.org/record/11477731)
 
 ### Splitting and Filtering Scripts
 
