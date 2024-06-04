@@ -16,11 +16,9 @@ PROSPECT PTM <br> [Multi-PTM dataset](https://zenodo.org/record/7998644) | 15 | 
 PROSPECT PTM <br> [TMT-PTM dataset](https://zenodo.org/record/8003152) | 10 | 327 | 159 K | 189 K | 7.8 M | 511 M | 3 B
 PROSPECT PTM<br> [Test-PTM dataset](https://zenodo.org/record/8003156) |  25 | 56 | 10 K | 15.6 K | 3 M | 193 M | 732 M
 
----
-
 ## Features
 
-* Access to a collection of collection of large annotated Mass Spectrometry datasets including peptide sequences with Post-Translational Modifications (PTMs)s.
+* Access to a collection of large annotated Mass Spectrometry datasets including peptide sequences with Post-Translational Modifications (PTMs).
 * Utilities for downloading and splitting data.
 
 ## Installation
@@ -40,7 +38,23 @@ pip install git+https://github.com/wilhelm-lab/PROSPECT
 - Install and import the package
 
 ```
-import prospectdataset as prods
+import prospectdataset as prospect
+```
+
+- To download a specficic dataset, pass one or more of the available record names `['prospect'`, `'tmt'`, `'multi_ptm'`, `'tmt_ptm'`, `'test_ptm']`:
+```
+prospect.download_dataset(record = 'prospect', save_directory = SAVE_PATH)
+```
+
+- Available record names and URLs can be displayed as follows:
+```
+print(prospect.AVAILABLE_DATASET_URLS)
+
+{'prospect': 'https://zenodo.org/record/6602020',
+ 'multi_ptm': 'https://zenodo.org/record/7998644',
+ 'tmt': 'https://zenodo.org/record/8003138',
+ 'tmt_ptm': 'https://zenodo.org/record/8003152',
+ 'test_ptm': 'https://zenodo.org/record/8003156'}
 ```
 
 - To download data for retention time prediction only:
@@ -55,7 +69,12 @@ prospect.download_dataset(task = 'all', save_directory = SAVE_PATH)
 
 - To download only one package from a specific dataset (for a faster download and a smaller dataset to experiment with), enter a substring from the package name, package names are in the respective Zenodo URL in the table. For example to download the package TUM_missing_first, the following would download the meta data file for the specfic package from the PROSPECT dataset:
 ```
-prods.download_dataset('retention-time', SAVE_PATH, 'missing')
+prospect.download_dataset(
+    record = 'prospect',
+    task = 'retention-time',
+    save_directory = SAVE_PATH,
+    select_package = 'missing'
+)
 ```
 
 - All downloaded files are in the parquet format. They can be easily read using panda's `pd.read_parquet()`. For faster loading, we recommend using `fastparquet` as an engine, in case it fails for some reason, `pyarrow` can also be used.
@@ -66,7 +85,12 @@ df = pd.read_parquet(PARQUET_FILEPATH, engine='fastparquet')
 
 #### From Zenodo:
 
-Download and unzip from [Zenodo](https://doi.org/10.5281/zenodo.6602020).
+Download and unzip from the respective zenodo record, available records are:
+- [PROSPECT](https://zenodo.org/record/6602020)
+- [PROSPECT PTM TMT](https://zenodo.org/record/8003138)
+- [PROSPECT PTM MULTI-PTM](https://zenodo.org/record/7998644)
+- [PROSPECT PTM TMT-PTM](https://zenodo.org/record/8003152)
+- [PROSPECT PTM TEST-PTM](https://zenodo.org/record/8003156)
 
 ### Splitting and Filtering Scripts
 
