@@ -1,8 +1,9 @@
-import sys
 import argparse
-import pandas as pd
-import numpy as np
+import sys
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.colors import LogNorm
 from matplotlib.ticker import LogLocator
 
@@ -10,28 +11,27 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "-p",
     "--pred_path",
-    help="Path to the file with Retention time predictions and targets"
+    help="Path to the file with Retention time predictions and targets",
 )
 
-parser.add_argument(
-    "-d",
-    "--delta_95",
-    help="iRT delta95 value"
-)
+parser.add_argument("-d", "--delta_95", help="iRT delta95 value")
 
 
 def main(sys_args=sys.argv[1:]):
     args = parser.parse_args(sys_args)
     iRT_pred_targets = pd.read_parquet(args.pred_path)
-    plot_density(iRT_pred_targets['targets'], iRT_pred_targets['predictions'], args.delta_95)
+    plot_density(
+        iRT_pred_targets["targets"], iRT_pred_targets["predictions"], args.delta_95
+    )
+
 
 def plot_density(
-        targets,
-        predictions,
-        irt_delta95=5,
-        palette="Reds_r",
-        delta95_line_color="#36479E",
-        nbins=1000,
+    targets,
+    predictions,
+    irt_delta95=5,
+    palette="Reds_r",
+    delta95_line_color="#36479E",
+    nbins=1000,
 ):
     """Create density plot
     Arguments
@@ -58,12 +58,10 @@ def plot_density(
 
     # Plot 2D histogram using pcolor
     cm = plt.cm.get_cmap(palette)
-    plt.pcolormesh(
-        xedges, yedges, Hmasked, cmap=cm, norm=LogNorm(vmin=1e0, vmax=1e2)
-    )
+    plt.pcolormesh(xedges, yedges, Hmasked, cmap=cm, norm=LogNorm(vmin=1e0, vmax=1e2))
 
-    plt.xlabel('Targets', fontsize=18)
-    plt.ylabel('Predictions', fontsize=18)
+    plt.xlabel("Targets", fontsize=18)
+    plt.ylabel("Predictions", fontsize=18)
 
     cbar = plt.colorbar(ticks=LogLocator(subs=range(5)))
     cbar.ax.set_ylabel("Counts", fontsize=14)
@@ -83,6 +81,6 @@ def plot_density(
     font_size = 14  # Adjust as appropriate.
     cbar.ax.tick_params(labelsize=font_size)
     cbar.ax.minorticks_on()
-    plt.savefig('iRT_density_plot.svg')
+    plt.savefig("iRT_density_plot.svg")
     plt.show()
     plt.close()
