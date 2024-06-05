@@ -3,10 +3,10 @@ ZENODO_BASE_RECORD = "https://zenodo.org/record/"
 
 AVAILABLE_DATASET_RECORDS = {
     "prospect": "6602020",
-    "tmt": "8003138",
-    "multi_ptm": "7998644",
-    "tmt_ptm": "8003152",
-    "test_ptm": "8003156",
+    "tmt": "8221499",
+    "multi_ptm": "11472525",
+    "tmt_ptm": "11474099",
+    "test_ptm": "11477731",
 }
 
 AVAILABLE_DATASET_URLS = {
