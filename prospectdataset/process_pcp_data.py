@@ -1,52 +1,131 @@
 import os
 import re
 
+import numpy as np
 import pandas as pd
 
 
 def combine_files_into_df(
-    directory_path="../data/", file_types=[".parquet", ".tsv", ".csv"]
+    directory_path="../data/",
+    file_types=[".parquet", ".tsv", ".csv"],
+    batch_size=42,
+    process_test_ptm_only=False,
 ):
     """
-    Combines all files in a directory into one DataFrame based on specified file types.
+    Combines all files in a directory and its subdirectories into one DataFrame based on specified file types.
+    Processes files in batches to handle large datasets efficiently. Detects TMT directories and marks the data.
 
     Parameters:
     directory_path (str): Path to the directory containing the files.
     file_types (list): List of file extensions to include in the combination (e.g., ['.parquet', '.tsv', '.csv']).
+    batch_size (int): Number of files to process in each batch.
+    process_test_ptm_only (bool): If True, only processes files in the 'test_ptm' directory. If False, ignores 'test_ptm'.
 
     Returns:
-    pd.DataFrame: A DataFrame consisting of combined data from files in the specified directory.
+    pd.DataFrame: A DataFrame consisting of combined data from files in the specified directory and its subdirectories.
     """
     read_funcs = {
         ".parquet": (pd.read_parquet, {"engine": "fastparquet"}),
         ".tsv": (pd.read_csv, {"sep": "\t"}),
         ".csv": (pd.read_csv, {}),
     }
-    files = [
-        file
-        for file in os.listdir(directory_path)
-        if os.path.splitext(file)[1] in file_types
-    ]
-    dfs = []
 
-    for file in files:
+    def get_all_files(directory):
+        """Recursively gets all files in the directory and subdirectories."""
+        files = []
+        for root, _, filenames in os.walk(directory):
+            for filename in filenames:
+                if os.path.splitext(filename)[1] in file_types:
+                    files.append(os.path.join(root, filename))
+        return files
+
+    def is_tmt_directory(file_path):
+        """Checks if the file is in a TMT directory."""
+        parts = file_path.split(os.sep)
+        return "tmt" in parts
+
+    def should_process_file(file_path):
+        """Determines if a file should be processed based on the directory and process_test_ptm_only flag."""
+        if process_test_ptm_only:
+            return "test_ptm" in file_path.split(os.sep)
+        else:
+            return "test_ptm" not in file_path.split(os.sep)
+
+    all_files = get_all_files(directory_path)
+    df = pd.DataFrame()
+    batch = []
+
+    for i, file in enumerate(all_files):
+        if not should_process_file(file):
+            continue
+
         print(f"Reading {file}...")
-        file_path = os.path.join(directory_path, file)
         file_extension = os.path.splitext(file)[1]
         read_func, params = read_funcs.get(file_extension, (None, None))
         if read_func:
-            df = read_func(file_path, **params)
-            dfs.append(df)
+            try:
+                df_part = read_func(file, **params)
+                if file_extension == ".parquet":
+                    package_name = os.path.basename(file).replace(
+                        "_meta_data.parquet", ""
+                    )
+                    df_part["package"] = package_name
+
+                # Detect TMT directory
+                if is_tmt_directory(file):
+                    df_part["is_tmt"] = True
+                else:
+                    df_part["is_tmt"] = False
+
+                batch.append(df_part)
+            except Exception as e:
+                print(f"Error reading {file}: {e}")
         else:
             print(f"Skipping unsupported file type: {file_extension}")
 
-    if dfs:
-        df = pd.concat(dfs, ignore_index=True)
-        print(f"Combined {len(dfs)} files from {directory_path}.")
-    else:
-        df = pd.DataFrame()
-        print("No files combined.")
+        if (i + 1) % batch_size == 0 or (i + 1) == len(all_files):
+            try:
+                df = pd.concat([df] + batch, ignore_index=True)
+                batch = []
+                print(f"Processed batch of {batch_size} files.")
+            except Exception as e:
+                print(f"Error concatenating batch: {e}")
 
+    if batch:
+        try:
+            df = pd.concat([df] + batch, ignore_index=True)
+            print(f"Processed final batch of {len(batch)} files.")
+        except Exception as e:
+            print(f"Error concatenating final batch: {e}")
+
+    print(f"Processed {len(all_files)} files from {directory_path}.")
+    return df
+
+
+def handle_tmt_data(df):
+    """
+    Processes the DataFrame to filter out sequences without UNIMOD:737 annotations for TMT data.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame.
+
+    Returns:
+    pd.DataFrame: The DataFrame after applying TMT-specific processing.
+    """
+    tmt_mask = df["is_tmt"]
+    if tmt_mask.sum() == 0:
+        print("No TMT data detected for processing.")
+        return df
+
+    print("Processing TMT data to remove sequences without UNIMOD:737 annotations...")
+    len_before = len(df[tmt_mask])
+    df_tmt_filtered = df[
+        tmt_mask & df["modified_sequence"].str.contains(r"\[UNIMOD:737\]")
+    ]
+    print(
+        f"Removed {len_before - len(df_tmt_filtered)} sequences without UNIMOD:737 annotations from TMT data."
+    )
+    df = pd.concat([df[~tmt_mask], df_tmt_filtered], ignore_index=True)
     return df
 
 
@@ -66,7 +145,15 @@ def filter_andromeda_score(df, threshold=70):
 
 
 def filter_dataframe_columns(
-    df, columns_to_keep=["modified_sequence", "precursor_charge", "precursor_intensity"]
+    df,
+    columns_to_keep=[
+        "modified_sequence",
+        "precursor_charge",
+        "precursor_intensity",
+        "raw_file",
+        "scan_number",
+        "package",
+    ],
 ):
     """
     Filters a DataFrame to retain only the specified columns.
@@ -76,7 +163,7 @@ def filter_dataframe_columns(
     columns_to_keep (list): The names of the columns to keep in the DataFrame.
 
     Returns:
-    pd.Data
+    pd.DataFrame: A DataFrame with only the specified columns.
     """
     print(f"Filtering DataFrame to keep columns: {columns_to_keep}...")
     df_filtered = (
@@ -101,20 +188,20 @@ def drop_na(df, column="precursor_intensity"):
     return df
 
 
-def keep_desired_charges(df, charge_list=[1, 2, 3, 4, 5, 6], min_count=None):
+def keep_desired_charges(df, min_count=None):
     """
-    Filters a DataFrame to keep only rows with charge states specified in the charge_list and,
+    Filters a DataFrame to keep only rows with charge states 1 to 6 and,
     optionally, where the count of each charge state is at least min_count.
 
     Parameters:
     df (pd.DataFrame): The DataFrame to filter.
-    charge_list (list): List of charge states to retain in the DataFrame.
     min_count (int, optional): Minimum count of charge states to be retained. If None, no minimum count is enforced.
 
     Returns:
     pd.DataFrame: A DataFrame containing only the rows with desired charge states and meeting the minimum count condition.
     """
     print("Filtering DataFrame for desired charge states...")
+    charge_list = [1, 2, 3, 4, 5, 6]
     if min_count is not None:
         charge_counts = df["precursor_charge"].value_counts()
         charge_list = [
@@ -141,7 +228,13 @@ def aggregate_unique_sequences(df):
     """
     print("Aggregating DataFrame by 'modified_sequence'...")
     df = df.groupby("modified_sequence", as_index=False)[
-        ["precursor_charge", "precursor_intensity"]
+        [
+            "precursor_charge",
+            "precursor_intensity",
+            "raw_file",
+            "scan_number",
+            "package",
+        ]
     ].agg(list)
     return df
 
@@ -195,7 +288,9 @@ def complete_vocabulary(df):
     return vocabulary, len(vocabulary)
 
 
-def select_most_abundant_charge_by_intensity(df, aggregation="max"):
+def select_most_abundant_charge_by_intensity(
+    df, aggregation="max", intensity_column="precursor_intensity"
+):
     """
     Selects the most abundant precursor charge based on intensity from lists of charges and intensities in a DataFrame.
 
@@ -215,7 +310,7 @@ def select_most_abundant_charge_by_intensity(df, aggregation="max"):
 
     for index, row in df.iterrows():
         charges = row["precursor_charge"]
-        intensities = row["precursor_intensity"]
+        intensities = row[intensity_column]
 
         # Aggregate intensities for each unique charge
         charge_intensity_dict = {}
@@ -313,15 +408,15 @@ def generate_charge_state_encodings(df, aggregation="max"):
     aggregation (str): Method to determine the most abundant charge ('max' for maximum intensity, 'avg' for average intensity).
 
     Returns:
-    pd.DataFrame: The DataFrame updated with two new columns: 'one_hot_most_abundant_charge' and 'charge_state_vector'.
+    pd.DataFrame: The DataFrame updated with two new columns: 'most_abundant_charge_state' and 'observed_charge_states'.
     The first column is a one-hot encoded vector representing the most abundant charge, and the second column is a
     binary vector representing the presence of each possible charge state up to the maximum found in the data.
     """
     print("Generating charge state labels...")
-    df["one_hot_most_abundant_charge"] = None
-    df["charge_state_vector"] = None
+    df["most_abundant_charge_state"] = None
+    df["observed_charge_states"] = None
 
-    max_charge_state = max(max(charges) for charges in df["precursor_charge"])
+    charge_states = 6
 
     for index, row in df.iterrows():
         charges = row["precursor_charge"]
@@ -349,23 +444,23 @@ def generate_charge_state_encodings(df, aggregation="max"):
         # Generate the one-hot encoded vector for the most abundant charge
         one_hot_vector = [
             1 if charge == most_abundant_charge else 0
-            for charge in range(1, max_charge_state + 1)
+            for charge in range(1, charge_states + 1)
         ]
 
         # Generate the charge state vector for all charges
-        charge_state_vector = [
-            1 if charge in charges else 0 for charge in range(1, max_charge_state + 1)
+        observed_charge_states = [
+            1 if charge in charges else 0 for charge in range(1, charge_states + 1)
         ]
 
-        df.at[index, "one_hot_most_abundant_charge"] = one_hot_vector
-        df.at[index, "charge_state_vector"] = charge_state_vector
+        df.at[index, "most_abundant_charge_state"] = one_hot_vector
+        df.at[index, "observed_charge_states"] = observed_charge_states
 
     return df
 
 
-def compute_normalized_intensity_distribution(df):
+def generate_charge_state_dist(df, intensity_column="precursor_intensity"):
     """
-    Computes the normalized intensity distribution for each sequence in the DataFrame.
+    Computes the normalized precursor charge state intensity distribution for each sequence in the DataFrame.
 
     Parameters:
     df (pd.DataFrame): The DataFrame containing 'precursor_charge' and 'precursor_intensity' lists for each sequence.
@@ -373,27 +468,93 @@ def compute_normalized_intensity_distribution(df):
     intensities for these charges.
 
     Returns:
-    pd.DataFrame: The DataFrame updated with a new column 'normalized_intensity_distribution', which contains a
+    pd.DataFrame: The DataFrame updated with a new column 'charge_state_dist', which contains a
     list of normalized intensities for each possible charge state up to the maximum found in the data.
     """
     print("Computing intensity distributions...")
-    max_charge_state = max(max(charges) for charges in df["precursor_charge"])
+    charge_states = 6
 
-    normalized_intensity_distribution = []
-    for charges, intensities in zip(df["precursor_charge"], df["precursor_intensity"]):
+    charge_state_dist = []
+    for charges, intensities in zip(df["precursor_charge"], df[intensity_column]):
         total_intensity = sum(intensities)
-        charge_intensity_dict = {charge: 0 for charge in range(1, max_charge_state + 1)}
+        charge_intensity_dict = {i: 0 for i in range(1, charge_states + 1)}
         for charge, intensity in zip(charges, intensities):
-            charge_intensity_dict[charge] += intensity
+            if charge in charge_intensity_dict:
+                charge_intensity_dict[charge] += intensity
 
         distribution = [
-            charge_intensity_dict[i] / total_intensity
-            for i in range(1, max_charge_state + 1)
+            charge_intensity_dict[i] / total_intensity if total_intensity > 0 else 0
+            for i in range(1, charge_states + 1)
         ]
-        normalized_intensity_distribution.append(distribution)
+        charge_state_dist.append(distribution)
 
-    df["normalized_intensity_distribution"] = normalized_intensity_distribution
+    df["charge_state_dist"] = charge_state_dist
     return df
+
+
+def apply_unique_to_columns(df, column_names):
+    """
+    Applies np.unique to each specified column in the DataFrame.
+
+    Parameters:
+    df (pd.DataFrame): The DataFrame to modify.
+    column_names (list of str): List of column names to which np.unique will be applied.
+
+    Returns:
+    pd.DataFrame: The modified DataFrame with unique values in the specified columns.
+    """
+    for column in column_names:
+        if column in df.columns:
+            df[column] = df[column].apply(
+                lambda x: np.unique(x) if isinstance(x, (list, np.ndarray)) else x
+            )
+        else:
+            print(f"Warning: Column '{column}' not found in DataFrame.")
+    return df
+
+
+def remove_duplicates_in_columns(df, columns):
+    """
+    Removes duplicates in the specified columns of the DataFrame by converting lists to sets and back to lists.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame.
+    columns (list): List of column names to remove duplicates from.
+
+    Returns:
+    pd.DataFrame: The DataFrame with duplicates removed in the specified columns.
+    """
+    for column in columns:
+        if column in df.columns:
+            df[column] = df[column].apply(
+                lambda x: list(set(x)) if isinstance(x, list) else x
+            )
+    return df
+
+
+def reduce_output_columns(df):
+    """
+    Reduces the DataFrame to contain only the specified columns:
+    'modified_sequence', 'raw_file', 'scan_number', 'package',
+    'most_abundant_charge_state', 'observed_charge_states', 'charge_state_dist'.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame.
+
+    Returns:
+    pd.DataFrame: The reduced DataFrame with only the specified columns.
+    """
+    output_colums = [
+        "modified_sequence",
+        "raw_file",
+        "scan_number",
+        "package",
+        "most_abundant_charge_state",
+        "observed_charge_states",
+        "charge_state_dist",
+    ]
+    df_reduced = df[output_colums].copy()
+    return df_reduced
 
 
 def save_df_as_parquet(df, data_dir, file_name="preprocessed_pcp_data.parquet"):
@@ -413,13 +574,23 @@ def save_df_as_parquet(df, data_dir, file_name="preprocessed_pcp_data.parquet"):
     print(f"File saved successfully at {file_path}")
 
 
-def process_pcp_data(
+def annotate_data(
     data_dir,
-    threshold=70,
-    columns_to_keep=["modified_sequence", "precursor_charge", "precursor_intensity"],
-    charge_list=[1, 2, 3, 4, 5, 6],
+    andromeda_threshold=70,
+    intensity_column="precursor_intensity",
+    columns_to_keep=[
+        "modified_sequence",
+        "precursor_charge",
+        "precursor_intensity",
+        "raw_file",
+        "scan_number",
+        "package",
+    ],
     min_count=None,
     aggregation="max",
+    save_dir=".",
+    file_name="processed_data.parquet",
+    process_test_ptm_only=False,
 ):
     """
     Processes the PCP data by performing a series of steps including filtering, aggregating, and generating new features
@@ -427,57 +598,80 @@ def process_pcp_data(
 
     Parameters:
     data_dir (str): Directory path where the data files are stored.
-    threshold (int): The threshold for filtering out rows based on 'andromeda_score'.
+    andromeda_threshold (int): The threshold for filtering out rows based on 'andromeda_score'.
+    intensity_column (str): The name of the column containing precursor intensities.
     columns_to_keep (list): The columns to retain in the DataFrame.
-    charge_list (list): The charge states to retain in the DataFrame.
-    min_count (int, optional): The minimum count of charge states to be retained.
-    k (int): The number of top charges to select based on their abundance.
+    min_count (int, optional): The minimum count of charge states to be retained. If None, no minimum count is enforced.
     aggregation (str): The method used to determine abundance ('max' for maximum intensity, 'avg' for average intensity).
+    tmt (bool): If True, run additional steps specific to TMT data.
+    save_dir (str): Directory where the processed data will be saved.
+    file_name (str): Name of the processed data file.
 
     Returns:
-    tuple (pd.DataFrame, int): The processed DataFrame and the length of the longest sequence retained in the DataFrame.
+    pd.DataFrame: The processed DataFrame.
     """
-    print("Starting data processing...")
-    df = combine_files_into_df(data_dir)
 
-    df = filter_andromeda_score(df, threshold)
+    print("Starting data processing...")
+    df = combine_files_into_df(data_dir, process_test_ptm_only=process_test_ptm_only)
+
+    df = handle_tmt_data(df)
+
+    df = filter_andromeda_score(df, andromeda_threshold)
 
     df = filter_dataframe_columns(df, columns_to_keep)
 
-    df = drop_na(df, column="precursor_intensity")
+    df = drop_na(df, column=intensity_column)
 
-    df = keep_desired_charges(df, charge_list, min_count)
+    df = keep_desired_charges(df, min_count)
 
     df = aggregate_unique_sequences(df)
 
+    df = apply_unique_to_columns(df, ["raw_file", "scan_number"])
+
+    df = remove_duplicates_in_columns(df, ["package"])
+
     df, max_seq_length = remove_rare_sequence_lengths(df)
 
-    df = select_most_abundant_charge_by_intensity(df, aggregation="max")
-    df = select_most_abundant_charge_by_intensity(df, aggregation="avg")
+    df = select_most_abundant_charge_by_intensity(
+        df, aggregation="max", intensity_column=intensity_column
+    )
 
     df = generate_charge_state_encodings(df, aggregation)
 
-    df = compute_normalized_intensity_distribution(df)
+    df = generate_charge_state_dist(df, intensity_column=intensity_column)
+
+    df = reduce_output_columns(df)
 
     save_df_as_parquet(
         df,
-        data_dir="/mnt/c/Users/Florian/Desktop/Uni/MSc/FoPr",
-        file_name="preprocessed_pcp_data.parquet",
+        data_dir=save_dir,
+        file_name=file_name,
     )
 
+    print("_" * 80)
     print("Data processing completed.")
     print("_" * 80)
-    print("Sample of processed data:")
-    print(df.head())
-    return df, max_seq_length
+    print(df.info())
+    return df
 
 
-# Example usage:
-process_pcp_data(
-    data_dir="../data/",
-    threshold=70,
-    columns_to_keep=["modified_sequence", "precursor_charge", "precursor_intensity"],
-    charge_list=[1, 2, 3, 4, 5, 6],
-    min_count=None,
-    aggregation="max",
-)
+# Example usage
+if __name__ == "__main__":
+    df = annotate_data(
+        data_dir="downloaded_data/test_ptm",
+        andromeda_threshold=70,
+        intensity_column="precursor_intensity",
+        columns_to_keep=[
+            "modified_sequence",
+            "precursor_charge",
+            "precursor_intensity",
+            "raw_file",
+            "scan_number",
+            "package",
+        ],
+        min_count=None,
+        aggregation="max",
+        save_dir="processed_data/test_ptm",
+        file_name="test_ptm_processed.parquet",
+        process_test_ptm_only=True,
+    )
