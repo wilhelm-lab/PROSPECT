@@ -248,8 +248,7 @@ def remove_rare_sequence_lengths(df, representation_threshold=100):
     representation_threshold (int): The minimum number of occurrences a sequence length must have to be retained.
 
     Returns:
-    tuple (pd.DataFrame, int): A tuple where the first element is a DataFrame containing only sequences whose lengths
-    meet or exceed the representation threshold, and the second element is the length of the longest sequence retained.
+    df (pd.DataFrame): A DataFrame containing only sequences whose lengths meet or exceed the representation threshold.
     """
     print(
         f"Removing rare sequences with lengths less than {representation_threshold} occurrences..."
@@ -260,10 +259,9 @@ def remove_rare_sequence_lengths(df, representation_threshold=100):
         lambda x: x >= representation_threshold
     ].index
     df_filtered = df[sequence_lengths.isin(valid_lengths)].copy()
-    padding_length = sequence_lengths.max()
     after_len = len(df_filtered)
     print(f"Removed {before_len - after_len} of {before_len} sequences.")
-    return df_filtered, padding_length
+    return df_filtered
 
 
 def complete_vocabulary(df):
@@ -320,7 +318,7 @@ def select_most_abundant_charge_by_intensity(
             else:
                 charge_intensity_dict[charge] = [intensity]
 
-        # Calculate the average or maximum intensity for each charge
+        # Calculating the average or maximum intensity for each charge
         if aggregation == "avg":
             avg_intensity = {
                 charge: sum(charge_intensity_dict[charge])
@@ -372,7 +370,7 @@ def top_k_abundant_charges_by_intensity(df, k=1, aggregation="max"):
         for charge, intensity in zip(charges, intensities):
             charge_intensity_dict.setdefault(charge, []).append(intensity)
 
-        # Calculate the average or maximum intensity for each charge
+        # Calculating the average or maximum intensity for each charge
         if aggregation == "avg":
             charge_intensity_aggregated = {
                 charge: sum(intensities) / len(intensities)
@@ -630,7 +628,7 @@ def annotate_data(
 
     df = remove_duplicates_in_columns(df, ["package"])
 
-    df, max_seq_length = remove_rare_sequence_lengths(df)
+    df = remove_rare_sequence_lengths(df)
 
     df = select_most_abundant_charge_by_intensity(
         df, aggregation="max", intensity_column=intensity_column
