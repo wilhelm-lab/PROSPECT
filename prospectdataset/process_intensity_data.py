@@ -172,7 +172,7 @@ def read_process_annotation_files(annotation_files, parquet_engine="fastparquet"
             inplace=True,
         )
 
-        ##To get from metadata --> send raw file and  scan number  --> get charge
+        # To get from metadata --> send raw file and  scan number  --> get charge
 
         a_dfs.append(df)
         del df

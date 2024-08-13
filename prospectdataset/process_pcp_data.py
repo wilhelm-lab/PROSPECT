@@ -31,7 +31,15 @@ def combine_files_into_df(
     }
 
     def get_all_files(directory):
-        """Recursively gets all files in the directory and subdirectories."""
+        """
+        Recursively gets all files in the directory and subdirectories.
+
+        Parameters:
+        directory (str): Path to the directory to search for files.
+
+        Returns:
+        list: A list of file paths found in the directory and subdirectories.
+        """
         files = []
         for root, _, filenames in os.walk(directory):
             for filename in filenames:
@@ -40,12 +48,28 @@ def combine_files_into_df(
         return files
 
     def is_tmt_directory(file_path):
-        """Checks if the file is in a TMT directory."""
+        """
+        Checks if the file is located in a TMT (Tandem Mass Tag) directory.
+
+        Parameters:
+        file_path (str): The path of the file to check.
+
+        Returns:
+        bool: True if the file is in a TMT directory, False otherwise.
+        """
         parts = file_path.split(os.sep)
         return "tmt" in parts
 
     def should_process_file(file_path):
-        """Determines if a file should be processed based on the directory and process_test_ptm_only flag."""
+        """
+        Determines if a file should be processed based on the directory path and the process_test_ptm_only flag.
+
+        Parameters:
+        file_path (str): The path of the file to check.
+
+        Returns:
+        bool: True if the file should be processed, False otherwise.
+        """
         if process_test_ptm_only:
             return "test_ptm" in file_path.split(os.sep)
         else:
@@ -341,7 +365,7 @@ def select_most_abundant_charge_by_intensity(
     return df
 
 
-def top_k_abundant_charges_by_intensity(df, k=1, aggregation="max"):
+def top_k_charge_states(df, k=1, aggregation="max"):
     """
     Selects the top k most abundant precursor charges based on intensity from lists of charges and intensities
     in a DataFrame, using specified aggregation method (maximum or average).
@@ -492,7 +516,7 @@ def generate_charge_state_dist(df, intensity_column="precursor_intensity"):
 
 def apply_unique_to_columns(df, column_names):
     """
-    Applies np.unique to each specified column in the DataFrame.
+    Applies np.unique to each specified column in the DataFrame to ensure all values in these columns are unique.
 
     Parameters:
     df (pd.DataFrame): The DataFrame to modify.
